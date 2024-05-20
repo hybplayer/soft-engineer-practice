@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 保留背景图片 -->
+    <!-- 背景图片 -->
     <div class="wrapper">
       <img src="../assets/banner.jpg" width="100%" height="500px" alt="" />
     </div>
@@ -71,7 +71,7 @@ export default {
 .bg {
   background: #eee;
   padding-top: 20px;
-  padding-bottom: 40px; /* 增加到底部的距离 */
+  padding-bottom: 20px;
   img {
     margin-left: 20px;
   }

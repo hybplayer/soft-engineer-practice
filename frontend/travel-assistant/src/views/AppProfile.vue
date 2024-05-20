@@ -12,11 +12,9 @@
     </form>
 
     <!-- 修改密码 -->
-    <form @submit.prevent="updatePassword">
     <form @submit.prevent="updatePassword" class="edit-form">
       <div class="edit">
         <label for="password">新密码：</label>
-        <el-input :type="passwordFieldType" v-model="newPassword">
         <el-input :type="passwordFieldType" v-model="newPassword" class="password-input">
           <template #suffix>
             <el-icon :component="passwordFieldType === 'password' ? Eye : EyeOff" @click="togglePasswordVisibility"/>
