@@ -12,6 +12,7 @@ export default {};
 footer {
   position: fixed;
   bottom: 0;
+  height: 5%;
   width: 100%;
   text-align: center;
   padding: 1rem;

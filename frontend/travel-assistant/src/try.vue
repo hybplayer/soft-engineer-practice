@@ -17,7 +17,7 @@
         <label for="password">新密码：</label>
         <el-input :type="passwordFieldType" v-model="newPassword" class="password-input">
           <template #suffix>
-            <el-icon :component="passwordFieldType === 'password' ? Eye : EyeOff" @click="togglePasswordVisibility"/>
+            <el-icon :component="passwordFieldType === 'password' ? Eye : EyeOff" @click="togglePasswordVisibility" />
           </template>
         </el-input>
 
@@ -25,7 +25,7 @@
         <el-input :type="confirmPasswordFieldType" v-model="confirmPassword" class="password-input">
           <template #suffix>
             <el-icon :component="confirmPasswordFieldType === 'password' ? Eye : EyeOff"
-                     @click="toggleConfirmPasswordVisibility"/>
+                     @click="toggleConfirmPasswordVisibility" />
           </template>
         </el-input>
 
@@ -99,8 +99,8 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex';
-import {ElMessage} from 'element-plus';
+import { mapActions, mapGetters, mapState } from 'vuex';
+import { ElMessage } from 'element-plus';
 
 export default {
   components: {
@@ -143,7 +143,7 @@ export default {
           ElMessage.error('用户名已存在');
           return;
         }
-        this.updateUserInfo({newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby})
+        this.updateUserInfo({ newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby })
             .then(() => {
               ElMessage.success('昵称保存成功');
             })
@@ -158,7 +158,7 @@ export default {
         ElMessage.error('新密码和确认新密码不一致');
         return;
       }
-      this.updateUserInfo({newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby})
+      this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
           .then(() => {
             ElMessage.success('密码保存成功');
           })
@@ -169,7 +169,7 @@ export default {
     },
     updateHobby() {
       if (this.hobby) {
-        this.updateUserInfo({newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby})
+        this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby })
             .then(() => {
               ElMessage.success('爱好保存成功');
             })
@@ -189,13 +189,13 @@ export default {
       this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
     },
     editDestination(row, index) {
-      this.editForm = {...row};
+      this.editForm = { ...row };
       this.editIndex = index;
       this.editDialogVisible = true;
     },
     saveEdit() {
       if (this.editIndex !== -1) {
-        this.editDestinationData({index: this.editIndex, data: this.editForm});
+        this.editDestinationData({ index: this.editIndex, data: this.editForm });
         this.editDialogVisible = false;
         ElMessage.success('目的地信息更新成功');
       }

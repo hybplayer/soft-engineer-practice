@@ -29,6 +29,17 @@
               <el-checkbox label="女生"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
+          <el-form-item label="可接受价格">
+            <el-select v-model="priceRange" placeholder="请选择">
+              <el-option label="1000元以下" value="1"></el-option>
+              <el-option label="1000-3000元" value="2"></el-option>
+              <el-option label="3000-5000元" value="3"></el-option>
+              <el-option label="5000元以上" value="4"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="对同伴的要求">
+            <el-input type="textarea" v-model="companionRequirements" placeholder="请输入对同伴的要求"></el-input>
+          </el-form-item>
           <el-form-item label="备注">
             <el-input type="textarea" v-model="remark" placeholder="请输入备注信息"></el-input>
           </el-form-item>
@@ -58,13 +69,15 @@ export default {
       destination: '',
       departureDate: '',
       checkboxValues: [],
+      priceRange: '',
+      companionRequirements: '',
       remark: ''
     };
   },
   methods: {
     ...mapActions('visitor', ['updateDestinationData']), // 引入更新目的地数据的动作
     handleSubmit() {
-      if (!this.departure || !this.destination || !this.departureDate || this.checkboxValues.length === 0 || !this.remark) {
+      if (!this.departure || !this.destination || !this.departureDate || this.checkboxValues.length === 0 || !this.priceRange || !this.companionRequirements || !this.remark) {
         ElMessage.error('提交失败，请填写完整表格');
         return;
       }
@@ -74,6 +87,8 @@ export default {
         destination: this.destination,
         departureDate: this.departureDate,
         checkboxValues: this.checkboxValues,
+        priceRange: this.priceRange,
+        companionRequirements: this.companionRequirements,
         remark: this.remark
       });
 
