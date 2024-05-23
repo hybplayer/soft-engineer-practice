@@ -52,9 +52,15 @@
         <el-table-column prop="departureDate" label="出发日期"></el-table-column>
         <el-table-column prop="checkboxValues" label="选择项">
           <template #default="{ row }">
-            <span v-for="(value, index) in row.checkboxValues" :key="index">{{ value }}</span>
+            <span v-for="(value, index) in row.checkboxValues" :key="index">{{ value }} </span>
           </template>
         </el-table-column>
+        <el-table-column prop="priceRange" label="可接受价格">
+          <template #default="{ row }">
+            <span>{{ priceRangeMap[row.priceRange] }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="companionRequirements" label="对同伴的要求"></el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
         <el-table-column label="操作">
           <template #default="{ $index }">
@@ -85,6 +91,17 @@
             <el-checkbox label="男生"></el-checkbox>
             <el-checkbox label="女生"></el-checkbox>
           </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="可接受价格">
+          <el-select v-model="editForm.priceRange" placeholder="请选择">
+            <el-option label="1000元以下" value="1"></el-option>
+            <el-option label="1000-3000元" value="2"></el-option>
+            <el-option label="3000-5000元" value="3"></el-option>
+            <el-option label="5000元以上" value="4"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="对同伴的要求">
+          <el-input type="textarea" v-model="editForm.companionRequirements"></el-input>
         </el-form-item>
         <el-form-item label="备注">
           <el-input type="textarea" v-model="editForm.remark"></el-input>
@@ -122,6 +139,8 @@ export default {
         destination: '',
         departureDate: '',
         checkboxValues: [],
+        priceRange: '',
+        companionRequirements: '',
         remark: ''
       },
       editIndex: -1
@@ -132,6 +151,14 @@ export default {
     ...mapGetters('visitor', ['getDestinationData', 'getUsers']),
     destinationData() {
       return this.getDestinationData;
+    },
+    priceRangeMap() {
+      return {
+        1: '1000元以下',
+        2: '1000-3000元',
+        3: '3000-5000元',
+        4: '5000元以上'
+      };
     }
   },
   methods: {
@@ -190,19 +217,31 @@ export default {
     },
     editDestination(row, index) {
       this.editForm = {...row};
-      this.editIndex = index;
+      this.editIndex = index
       this.editDialogVisible = true;
     },
     saveEdit() {
       if (this.editIndex !== -1) {
-        this.editDestinationData({index: this.editIndex, data: this.editForm});
-        this.editDialogVisible = false;
-        ElMessage.success('目的地信息更新成功');
+        this.editDestinationData({index: this.editIndex, data: this.editForm})
+            .then(() => {
+              ElMessage.success('目的地信息更新成功');
+              this.editDialogVisible = false;
+            })
+            .catch(error => {
+              ElMessage.error('更新失败');
+              console.error('目的地信息更新失败:', error);
+            });
       }
     },
     deleteDestination(index) {
-      this.deleteDestinationData(index);
-      ElMessage.success('目的地信息删除成功');
+      this.deleteDestinationData(index)
+          .then(() => {
+            ElMessage.success('目的地信息删除成功');
+          })
+          .catch(error => {
+            ElMessage.error('删除失败');
+            console.error('目的地信息删除失败:', error);
+          });
     }
   },
   created() {
