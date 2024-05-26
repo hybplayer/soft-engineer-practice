@@ -19,7 +19,7 @@
         <li v-for="(item, index) in arr" :key="index">
           <div class="img">
             <a href="##">
-              <img :class="{ animate: item.type !== 'video' }" :src="item.data.pic" alt="" />
+              <img :class="{animate:item.type !=='video'}" :src="item.data.pic" alt="" />
             </a>
           </div>
           <div class="info">
