@@ -149,7 +149,7 @@ export default {
   }
   .link {
     text-decoration: none; /* 移除下划线 */
-    color: inherit; /* 继承父级颜色 */
+    color: inherit;
   }
 }
 </style>
