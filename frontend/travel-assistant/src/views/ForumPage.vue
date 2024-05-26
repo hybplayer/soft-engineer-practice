@@ -46,18 +46,15 @@ export default {
   },
   methods: {
     addPost(newPost) {
-      // 为新帖子生成唯一的 ID
       const postId = this.posts.length + 1;
-      // 将新帖子添加到顶部
       this.posts.unshift({
         id: postId,
         avatar: require("../assets/A.jpg"),
-        username: "旅行者",//
-        content: newPost.content,//显示新帖子评论区
-        title: newPost.title,//显示新帖子标题
+        username: "旅行者",
+        content: newPost.content,
+        title: newPost.title,
         image: newPost.image
       });
-      // 关闭发帖模态框
       this.showModal = false;
     }
   }
@@ -68,8 +65,6 @@ export default {
 .forum-page {
   padding: 20px;
   background-image: url("../assets/B.jpg");
-
-
 }
 
 .forum-header {
@@ -79,25 +74,11 @@ export default {
   margin-bottom: 20px;
 }
 
-.new-post-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .forum-posts .post {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
   margin-bottom: 30px;
-  /* 设置评论间距 */
 }
 
 .user-info {
@@ -108,9 +89,6 @@ export default {
 .user-info span {
   font-weight: bold;
   margin-right: 50px;
-  /* 设置用户昵称和评分之间的间隔 */
-
-
 }
 
 .user-info img {
@@ -118,21 +96,12 @@ export default {
   height: 50px;
   border-radius: 50%;
   margin-right: 10px;
-
-}
-
-.user-info span {
-  font-weight: bold;
-
-
 }
 
 .post {
   border-bottom: 1px dashed #ccc;
-  /* 添加虚线隔开 */
   padding-bottom: 20px;
-  /* 设置评论之间的间距 */
-  margin-right: 25%
+  margin-right: 25%;
 }
 
 .post-content {
@@ -143,10 +112,7 @@ export default {
 
 .comment-image {
   width: 200px;
-  /* 设置评论图片宽度 */
   height: auto;
-  /* 让高度自适应 */
   margin-top: 10px;
-  /* 设置评论图片与评论内容之间的间距 */
 }
 </style>

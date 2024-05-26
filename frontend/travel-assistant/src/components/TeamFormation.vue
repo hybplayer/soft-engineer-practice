@@ -14,17 +14,20 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   computed: {
+    ...mapState('visitor', ['auth']),
     ...mapGetters('visitor', ['getUsers']),
     userList() {
-      return this.getUsers.map(user => ({
-        username: user.username,
-        hobby: user.hobby,
-        destination: user.destination
-      }));
+      return this.getUsers
+        .filter(user => user.username !== this.auth.username) // 排除当前用户
+        .map(user => ({
+          username: user.username,
+          hobby: user.hobby,
+          destination: user.destination
+        }));
     }
   }
 };

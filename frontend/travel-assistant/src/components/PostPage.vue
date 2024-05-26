@@ -14,10 +14,14 @@
         <img v-if="post.image" :src="post.image" alt="Post Image" />
       </div>
     </div>
+
+    <CommentSection :postId="post.id" />
   </div>
 </template>
 
 <script>
+import CommentSection from "@/components/CommentSection.vue";
+
 export default {
   name: "PostPage",
   props: {
@@ -25,6 +29,9 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  components: {
+    CommentSection,
   },
 };
 </script>
@@ -52,13 +59,14 @@ export default {
 .user-info span {
   font-weight: bold;
 }
+
 .forum-img img {
   height: 100px;
   width: auto;
-  padding-right: 15px ;
-
+  padding-right: 15px;
 }
-.forum{
+
+.forum {
   display: flex;
   justify-content: space-between;
   width: 100%;

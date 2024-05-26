@@ -5,13 +5,6 @@ const store = createStore({
     visitor: {
       namespaced: true,
       state: {
-        visitorData: {
-          2020: 1000,
-          2021: 2000,
-          2022: 3000,
-          2023: 4000,
-          2024: 5000,
-        },
         auth: {
           isAuthenticated: false,
           username: '',
@@ -77,14 +70,6 @@ const store = createStore({
         }
       },
       actions: {
-        fetchVisitorData({ commit }) {
-          try {
-            const data = fetchVisitorDataFromBackend();
-            commit('updateVisitorData', data);
-          } catch (error) {
-            console.error('Failed to fetch visitor data:', error);
-          }
-        },
         updateUserInfo({ commit }, payload) {
           commit('updateUserInfo', payload);
         },
@@ -94,8 +79,12 @@ const store = createStore({
         loadUsers({ commit }) {
           commit('loadUsers');
         },
-        updateDestinationData({ commit }, payload) {
-          commit('updateDestinationData', payload);
+        updateDestinationData({ commit, state }, payload) {
+          const dataWithUsername = {
+            ...payload,
+            username: state.auth.username // 添加用户名到数据中
+          };
+          commit('updateDestinationData', dataWithUsername);
         },
         editDestinationData({ commit }, payload) {
           commit('editDestinationData', payload);
@@ -105,22 +94,13 @@ const store = createStore({
         }
       },
       getters: {
-        getVisitorData: state => state.visitorData,
-        getDestinationData: state => state.destinationData,
-        getUsers: state => state.users
+        getDestinationData: (state) => (username) => {
+          return state.destinationData.filter(destination => destination.username === username);
+        },
+        getUsers: (state) => state.users
       }
     }
   }
 });
-
-function fetchVisitorDataFromBackend() {
-  return {
-    2020: 1000,
-    2021: 2000,
-    2022: 3000,
-    2023: 4000,
-    2024: 5000,
-  };
-}
 
 export default store;

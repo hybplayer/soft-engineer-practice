@@ -3,7 +3,7 @@
     <h2>个人中心</h2>
 
     <!-- 修改用户名 -->
-    <form @submit.prevent="updateUsername" class="edit-form">
+    <form @submit.prevent="updateUsername" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
         <label for="nickname">新昵称：</label>
         <input type="text" id="nickname" v-model="newNickname">
@@ -12,12 +12,12 @@
     </form>
 
     <!-- 修改密码 -->
-    <form @submit.prevent="updatePassword" class="edit-form">
+    <form @submit.prevent="updatePassword" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
         <label for="password">新密码：</label>
         <el-input :type="passwordFieldType" v-model="newPassword" class="password-input">
           <template #suffix>
-            <el-icon :component="passwordFieldType === 'password' ? Eye : EyeOff" @click="togglePasswordVisibility"/>
+            <el-icon :component="passwordFieldType === 'password' ? Eye : EyeOff" @click="togglePasswordVisibility" />
           </template>
         </el-input>
 
@@ -25,7 +25,7 @@
         <el-input :type="confirmPasswordFieldType" v-model="confirmPassword" class="password-input">
           <template #suffix>
             <el-icon :component="confirmPasswordFieldType === 'password' ? Eye : EyeOff"
-                     @click="toggleConfirmPasswordVisibility"/>
+              @click="toggleConfirmPasswordVisibility" />
           </template>
         </el-input>
 
@@ -34,7 +34,7 @@
     </form>
 
     <!-- 修改旅游爱好 -->
-    <form @submit.prevent="updateHobby" class="edit-form">
+    <form @submit.prevent="updateHobby" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
         <label for="hobby">旅游爱好：</label>
         <textarea id="hobby" v-model="hobby" @input="updateHobbyLength"></textarea>
@@ -42,6 +42,12 @@
         <button type="submit">保存爱好</button>
       </div>
     </form>
+
+    <!-- 显示用户信息 -->
+    <div v-else>
+      <p><strong>昵称:</strong> {{ currentUser.username }}</p>
+      <p><strong>旅游爱好:</strong> {{ currentUser.hobby }}</p>
+    </div>
 
     <!-- 新增数据存放区域 -->
     <div class="destination-data">
@@ -62,9 +68,8 @@
         </el-table-column>
         <el-table-column prop="companionRequirements" label="对同伴的要求"></el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" v-if="isCurrentUser">
           <template #default="{ $index }">
-            <!-- <el-button type="text" size="small" @click="editDestination(row, $index)">编辑</el-button> -->
             <el-button type="text" size="small" @click="deleteDestination($index)">删除</el-button>
           </template>
         </el-table-column>
@@ -116,13 +121,15 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex';
-import {ElMessage} from 'element-plus';
+import { mapActions, mapGetters, mapState } from 'vuex';
+import { ElMessage } from 'element-plus';
 
 export default {
-  components: {
-    // Eye,
-    // EyeOff
+  props: {
+    username: {
+      type: String,
+      required: false
+    }
   },
   data() {
     return {
@@ -148,9 +155,9 @@ export default {
   },
   computed: {
     ...mapState('visitor', ['auth']),
-    ...mapGetters('visitor', ['getDestinationData', 'getUsers']),
+    ...mapGetters('visitor', ['getUsers']),
     destinationData() {
-      return this.getDestinationData;
+      return this.$store.getters['visitor/getDestinationData'](this.currentUser.username);
     },
     priceRangeMap() {
       return {
@@ -159,6 +166,12 @@ export default {
         3: '3000-5000元',
         4: '5000元以上'
       };
+    },
+    currentUser() {
+      return this.username ? this.getUsers.find(user => user.username === this.username) : this.auth;
+    },
+    isCurrentUser() {
+      return this.currentUser.username === this.auth.username;
     }
   },
   methods: {
@@ -170,14 +183,14 @@ export default {
           ElMessage.error('用户名已存在');
           return;
         }
-        this.updateUserInfo({newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby})
-            .then(() => {
-              ElMessage.success('昵称保存成功');
-            })
-            .catch(error => {
-              ElMessage.error('保存失败');
-              console.error('昵称保存失败:', error);
-            });
+        this.updateUserInfo({ newNickname: this.newNickname, newPassword: this.currentUser.password, hobby: this.hobby })
+          .then(() => {
+            ElMessage.success('昵称保存成功');
+          })
+          .catch(error => {
+            ElMessage.error('保存失败');
+            console.error('昵称保存失败:', error);
+          });
       }
     },
     updatePassword() {
@@ -185,25 +198,25 @@ export default {
         ElMessage.error('新密码和确认新密码不一致');
         return;
       }
-      this.updateUserInfo({newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby})
-          .then(() => {
-            ElMessage.success('密码保存成功');
-          })
-          .catch(error => {
-            ElMessage.error('保存失败');
-            console.error('密码保存失败:', error);
-          });
+      this.updateUserInfo({ newNickname: this.currentUser.username, newPassword: this.newPassword, hobby: this.hobby })
+        .then(() => {
+          ElMessage.success('密码保存成功');
+        })
+        .catch(error => {
+          ElMessage.error('保存失败');
+          console.error('密码保存失败:', error);
+        });
     },
     updateHobby() {
       if (this.hobby) {
-        this.updateUserInfo({newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby})
-            .then(() => {
-              ElMessage.success('爱好保存成功');
-            })
-            .catch(error => {
-              ElMessage.error('保存失败');
-              console.error('爱好保存失败:', error);
-            });
+        this.updateUserInfo({ newNickname: this.currentUser.username, newPassword: this.currentUser.password, hobby: this.hobby })
+          .then(() => {
+            ElMessage.success('爱好保存成功');
+          })
+          .catch(error => {
+            ElMessage.error('保存失败');
+            console.error('爱好保存失败:', error);
+          });
       }
     },
     updateHobbyLength() {
@@ -216,37 +229,37 @@ export default {
       this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
     },
     editDestination(row, index) {
-      this.editForm = {...row};
-      this.editIndex = index
+      this.editForm = { ...row };
+      this.editIndex = index;
       this.editDialogVisible = true;
     },
     saveEdit() {
       if (this.editIndex !== -1) {
-        this.editDestinationData({index: this.editIndex, data: this.editForm})
-            .then(() => {
-              ElMessage.success('目的地信息更新成功');
-              this.editDialogVisible = false;
-            })
-            .catch(error => {
-              ElMessage.error('更新失败');
-              console.error('目的地信息更新失败:', error);
-            });
+        this.editDestinationData({ index: this.editIndex, data: this.editForm })
+          .then(() => {
+            ElMessage.success('目的地信息更新成功');
+            this.editDialogVisible = false;
+          })
+          .catch(error => {
+            ElMessage.error('更新失败');
+            console.error('目的地信息更新失败:', error);
+          });
       }
     },
     deleteDestination(index) {
       this.deleteDestinationData(index)
-          .then(() => {
-            ElMessage.success('目的地信息删除成功');
-          })
-          .catch(error => {
-            ElMessage.error('删除失败');
-            console.error('目的地信息删除失败:', error);
-          });
+        .then(() => {
+          ElMessage.success('目的地信息删除成功');
+        })
+        .catch(error => {
+          ElMessage.error('删除失败');
+          console.error('目的地信息删除失败:', error);
+        });
     }
   },
   created() {
-    this.newNickname = this.auth.username;
-    this.hobby = this.auth.hobby || '';
+    this.newNickname = this.currentUser.username;
+    this.hobby = this.currentUser.hobby || '';
     this.hobbyLength = this.hobby.length;
   }
 };
