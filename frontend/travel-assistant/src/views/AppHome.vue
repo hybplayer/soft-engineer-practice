@@ -1,25 +1,22 @@
 <template>
   <div>
-    <!-- 背景图片 -->
+    <!-- 背景图片轮播图 -->
     <div class="wrapper">
-      <img src="../assets/banner.jpg" width="100%" height="500px" alt="" />
+      <el-carousel :interval="3000" type="fade" height="500px">
+        <el-carousel-item v-for="(image, index) in images" :key="index">
+          <img :src="image" width="100%" height="500px" alt="" />
+        </el-carousel-item>
+      </el-carousel>
     </div>
 
     <!-- 今日推荐 -->
-    <div class="bg">
-      <div class="container">
-        <img src="../assets/left.jpg" width="740" height="110" alt="" />
-        <img src="../assets/right.jpg" width="400" height="110" alt="" />
-      </div>
-    </div>
-
     <div class="section">
       <div class="title">今日推荐</div>
       <ul class="content">
         <li v-for="(item, index) in arr" :key="index">
           <div class="img">
             <a href="##">
-              <img :class="{animate:item.type !=='video'}" :src="item.data.pic" alt="" />
+              <img :class="{ animate: item.type !== 'video' }" :src="item.data.pic" referrerPolicy="no-referrer" alt="" />
             </a>
           </div>
           <div class="info">
@@ -44,15 +41,21 @@ export default {
   data() {
     return {
       arr: [], // 推荐数据容器
+      images: [
+        require('../assets/banner-1.png'),
+        require('../assets/banner-2.png'),
+        require('../assets/banner-3.png'),
+        require('../assets/banner-4.png')
+      ]
     };
   },
   created() {
     // 获取今日推荐
     this.$api.getTuijian().then((res) => {
-      console.log("今日推荐----", res.data);
+      console.log('今日推荐----', res.data);
       this.arr = res.data.data;
     });
-  },
+  }
 };
 </script>
 
@@ -66,15 +69,6 @@ export default {
 .container {
   width: 1200px;
   margin: 0 auto;
-}
-
-.bg {
-  background: #eee;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  img {
-    margin-left: 20px;
-  }
 }
 
 .section {
