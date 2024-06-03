@@ -48,6 +48,7 @@ export default {
     submitPost() {
       if (this.title && this.content) {
         const newPost = {
+          id: Date.now(), // 使用时间戳作为唯一 ID
           title: this.title,
           content: this.content,
           image: this.uploadedImages.length > 0 ? this.uploadedImages[0].url : null

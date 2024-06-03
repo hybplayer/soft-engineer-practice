@@ -12,7 +12,8 @@ const store = createStore({
           hobby: ''
         },
         users: [],
-        destinationData: JSON.parse(localStorage.getItem('destinationData')) || []
+        destinationData: JSON.parse(localStorage.getItem('destinationData')) || [],
+        posts: JSON.parse(localStorage.getItem('posts')) || [] // 新增 posts 状态
       },
       mutations: {
         login(state, user) {
@@ -64,6 +65,16 @@ const store = createStore({
         deleteDestinationData(state, index) {
           state.destinationData.splice(index, 1);
           localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
+        },
+        addPost(state, post) { // 新增 addPost mutation
+          state.posts.unshift(post);
+          localStorage.setItem('posts', JSON.stringify(state.posts));
+        },
+        loadPosts(state) { // 新增 loadPosts mutation
+          const posts = JSON.parse(localStorage.getItem('posts'));
+          if (posts) {
+            state.posts = posts;
+          }
         }
       },
       actions: {
@@ -88,13 +99,24 @@ const store = createStore({
         },
         deleteDestinationData({ commit }, index) {
           commit('deleteDestinationData', index);
+        },
+        addPost({ commit, state }, post) { // 新增 addPost action
+          const postWithUsername = {
+            ...post,
+            username: state.auth.username
+          };
+          commit('addPost', postWithUsername);
+        },
+        loadPosts({ commit }) { // 新增 loadPosts action
+          commit('loadPosts');
         }
       },
       getters: {
         getDestinationData: (state) => (username) => {
           return state.destinationData.filter(destination => destination.username === username);
         },
-        getUsers: (state) => state.users
+        getUsers: (state) => state.users,
+        getPosts: (state) => state.posts // 新增 getPosts getter
       }
     }
   }

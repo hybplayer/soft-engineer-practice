@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import NewPostModal from "@/components/NewPostModal.vue";
 import PostPage from "@/components/PostPage.vue";
 
@@ -24,46 +24,20 @@ export default {
   },
   data() {
     return {
-      showModal: false,
-      posts: [
-        {
-          id: 1,
-          avatar: require("../assets/A.jpg"),
-          username: "User1",
-          content: "这个城市真美好！这个城市真美好！",
-          title: "香港之旅",
-          image: require("../assets/hongkong.jpg")
-        },
-        {
-          id: 2,
-          avatar: require("../assets/B.jpg"),
-          username: "User2",
-          content: "今天的天气很好！",
-          title: "澳门之旅",
-          image: require("../assets/hongkong.jpg")
-        }
-      ]
+      showModal: false
     };
   },
   computed: {
-    ...mapState('visitor', ['auth'])
+    ...mapState('visitor', ['auth', 'posts'])
   },
   methods: {
-    addPost(newPost) {
-      const postId = this.posts.length + 1;
-      this.posts.unshift({
-        id: postId,
-        avatar: require("../assets/A.jpg"),
-        username: this.auth.username, // 使用当前登录用户的用户名
-        content: newPost.content,
-        title: newPost.title,
-        image: newPost.image
-      });
-      this.showModal = false;
-    },
+    ...mapActions('visitor', ['addPost', 'loadPosts']),
     handleCloseModal() {
       this.showModal = false;
     }
+  },
+  created() {
+    this.loadPosts(); // 在组件创建时加载帖子
   }
 };
 </script>
