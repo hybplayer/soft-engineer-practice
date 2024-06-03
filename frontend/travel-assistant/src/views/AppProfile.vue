@@ -117,14 +117,22 @@
         <el-button type="primary" @click="saveEdit">保存</el-button>
       </template>
     </el-dialog>
+
+    <!-- 评论组件 -->
+    <CommentSection :postId="postId" :currentUser="currentUser" />
   </div>
 </template>
 
 <script>
+// eslint-disable-next-line vue/no-unused-components
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { ElMessage } from 'element-plus';
+import CommentSection from '@/components/CommentSection.vue'; // 导入评论组件
 
 export default {
+  components: {
+    CommentSection
+  },
   props: {
     username: {
       type: String,
@@ -150,7 +158,8 @@ export default {
         companionRequirements: '',
         remark: ''
       },
-      editIndex: -1
+      editIndex: -1,
+      postId: 1 // 示例帖子ID
     };
   },
   computed: {

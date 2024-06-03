@@ -22,6 +22,10 @@ export default {
     postId: {
       type: Number,
       required: true
+    },
+    currentUser: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -36,7 +40,7 @@ export default {
         const newComment = {
           id: this.comments.length + 1,
           avatar: require("../assets/user-default.jpg"),
-          username: "新用户",
+          username: this.currentUser.username, // 使用当前登录用户的用户名
           content: this.newComment.trim()
         };
         this.comments.push(newComment);

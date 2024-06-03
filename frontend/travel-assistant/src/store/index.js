@@ -7,17 +7,14 @@ const store = createStore({
       state: {
         auth: {
           isAuthenticated: false,
-          username: '',
+          username: '', // 确保这里存储了当前登录用户的用户名
           password: '',
-          hobby: '' // 新增存储旅游爱好
+          hobby: ''
         },
-        users: [], // 存储注册用户的数据
-        destinationData: JSON.parse(localStorage.getItem('destinationData')) || [] // 初始化为本地存储的数据或空数组
+        users: [],
+        destinationData: JSON.parse(localStorage.getItem('destinationData')) || []
       },
       mutations: {
-        updateVisitorData(state, payload) {
-          state.visitorData = payload;
-        },
         login(state, user) {
           state.auth.isAuthenticated = true;
           state.auth.username = user.username;
@@ -35,8 +32,8 @@ const store = createStore({
           state.auth.username = user.username;
           state.auth.password = user.password;
           state.auth.hobby = user.hobby || '';
-          state.users.push(user); // 将注册用户添加到用户列表中
-          localStorage.setItem('users', JSON.stringify(state.users)); // 保存到本地存储
+          state.users.push(user);
+          localStorage.setItem('users', JSON.stringify(state.users));
         },
         loadUsers(state) {
           const users = JSON.parse(localStorage.getItem('users'));
@@ -53,20 +50,20 @@ const store = createStore({
             state.auth.username = payload.newNickname || state.auth.username;
             state.auth.password = payload.newPassword || state.auth.password;
             state.auth.hobby = payload.hobby || state.auth.hobby;
-            localStorage.setItem('users', JSON.stringify(state.users)); // 更新本地存储
+            localStorage.setItem('users', JSON.stringify(state.users));
           }
         },
         updateDestinationData(state, payload) {
           state.destinationData.push(payload);
-          localStorage.setItem('destinationData', JSON.stringify(state.destinationData)); // 保存到本地存储
+          localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
         },
         editDestinationData(state, { index, data }) {
           state.destinationData.splice(index, 1, data);
-          localStorage.setItem('destinationData', JSON.stringify(state.destinationData)); // 更新本地存储
+          localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
         },
         deleteDestinationData(state, index) {
           state.destinationData.splice(index, 1);
-          localStorage.setItem('destinationData', JSON.stringify(state.destinationData)); // 更新本地存储
+          localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
         }
       },
       actions: {
@@ -82,7 +79,7 @@ const store = createStore({
         updateDestinationData({ commit, state }, payload) {
           const dataWithUsername = {
             ...payload,
-            username: state.auth.username // 添加用户名到数据中
+            username: state.auth.username
           };
           commit('updateDestinationData', dataWithUsername);
         },

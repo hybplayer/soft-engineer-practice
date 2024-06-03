@@ -3,7 +3,7 @@ import Home from '../views/AppHome.vue';
 import Profile from '../views/AppProfile.vue';
 import TravelIntention from '../views/TravelIntention.vue';
 import NotFound from '../views/NotFound.vue';
-import LoginRegister from '../components/LoginRegister.vue'; // 导入新的 LoginRegister 组件
+import LoginRegister from '../components/LoginRegister.vue';
 import TeamFormation from '../components/TeamFormation.vue';
 import RoutePlanning from '../components/RoutePlanning.vue';
 import ForumPage from '../views/ForumPage.vue';
@@ -13,12 +13,12 @@ const routes = [
   { path: '/', component: Home, name: 'Home' },
   { path: '/profile', component: Profile, name: 'Profile' },
   { path: '/travel-intention', component: TravelIntention, name: 'TravelIntention' },
-  { path: '/login', component: LoginRegister, name: 'Login' }, // 修改为新的 LoginRegister 组件
-  { path: '/register', component: LoginRegister, name: 'Register' }, // 修改为新的 LoginRegister 组件
+  { path: '/login', component: LoginRegister, name: 'Login' },
+  { path: '/register', component: LoginRegister, name: 'Register' },
   { path: '/team-formation', component: TeamFormation, name: 'TeamFormation' },
   { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning' },
   { path: '/forumpage', component: ForumPage, name: 'ForumPage' },
-  { path: '/user/:username', component: Profile, name: 'UserProfile', props: true }, // 使用 AppProfile 组件
+  { path: '/user/:username', component: Profile, name: 'UserProfile', props: true },
   { path: '/:catchAll(.*)', component: NotFound, name: 'NotFound' }
 ];
 
@@ -40,4 +40,3 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
-

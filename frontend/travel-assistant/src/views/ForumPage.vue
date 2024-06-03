@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import NewPostModal from "@/components/NewPostModal.vue";
 import PostPage from "@/components/PostPage.vue";
 
@@ -44,13 +45,16 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapState('visitor', ['auth'])
+  },
   methods: {
     addPost(newPost) {
       const postId = this.posts.length + 1;
       this.posts.unshift({
         id: postId,
         avatar: require("../assets/A.jpg"),
-        username: "旅行者",
+        username: this.auth.username, // 使用当前登录用户的用户名
         content: newPost.content,
         title: newPost.title,
         image: newPost.image
