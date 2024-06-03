@@ -124,7 +124,6 @@
 </template>
 
 <script>
-// eslint-disable-next-line vue/no-unused-components
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { ElMessage } from 'element-plus';
 import CommentSection from '@/components/CommentSection.vue'; // 导入评论组件

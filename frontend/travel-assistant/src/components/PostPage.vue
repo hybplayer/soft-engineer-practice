@@ -1,8 +1,8 @@
 <template>
   <div class="post">
     <div class="user-info">
-      <img :src="post.avatar" alt="User Avatar" />
-      <span>{{ post.username }}</span>
+      <img :src="post.avatar || defaultAvatar" alt="User Avatar" />
+      <span @click="viewProfile(post.username)" class="username-link">{{ post.username }}</span>
     </div>
 
     <div class="forum">
@@ -21,6 +21,7 @@
 
 <script>
 import CommentSection from "@/components/CommentSection.vue";
+import defaultAvatar from "../assets/B.jpg"; // 请确保有一个默认头像
 
 export default {
   name: "PostPage",
@@ -33,6 +34,16 @@ export default {
   components: {
     CommentSection,
   },
+  methods: {
+    viewProfile(username) {
+      this.$router.push({ name: 'UserProfile', params: { username } });
+    }
+  },
+  data() {
+    return {
+      defaultAvatar
+    }
+  }
 };
 </script>
 
@@ -56,8 +67,9 @@ export default {
   margin-right: 10px;
 }
 
-.user-info span {
+.user-info .username-link {
   font-weight: bold;
+  cursor: pointer;
 }
 
 .forum-img img {

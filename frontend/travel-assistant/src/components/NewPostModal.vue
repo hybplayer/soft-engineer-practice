@@ -1,92 +1,128 @@
 <template>
   <div class="new-post-modal">
-    <div class="main-post">
-    <el-input v-model="input" style="width: 240px" placeholder="请输入标题" />
-    <p></p>
-    <el-input
-      v-model="newPost.content"
-      placeholder="请发表您的评论"
-      class="textarea-with-button"
-      maxlength="100"
-      rows="4"
-      show-word-limit
-    ></el-input>
-    <el-button icon="PictureFilled" @click="selectImage" type="primary">上传图片</el-button>
-    <input type="file" ref="fileInput" style="display: none" @change="handleImageUpload">
-    <el-button icon="Check" @click="saveAndSubmit" type="success">保存并提交</el-button>
-  </div>
+    <div class="modal-content">
+      <h3>发新帖</h3>
+      <input v-model="title" placeholder="请输入标题" />
+      <textarea v-model="content" placeholder="请输入内容"></textarea>
+
+      <div class="image-upload">
+        <input type="file" @change="handleImageUpload" multiple />
+        <div v-if="uploadedImages.length" class="uploaded-images">
+          <div v-for="(image, index) in uploadedImages" :key="index" class="uploaded-image">
+            <img :src="image.url" alt="Uploaded Image" />
+            <button @click="removeImage(index)">删除</button>
+          </div>
+        </div>
+      </div>
+
+      <button @click="submitPost">提交</button>
+      <button @click="closeModal">取消</button>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  name: "NewPostModal",
   data() {
     return {
-      input: "", // 标题输入框的内容
-      newPost: {
-        username: "", // 用户名
-        image: "", // 图片
-        content: "" // 评论内容
-      }
+      title: "",
+      content: "",
+      uploadedImages: []
     };
   },
   methods: {
-    selectImage() {
-      // 触发文件选择对话框
-      this.$refs.fileInput.click();
-    },
     handleImageUpload(event) {
-  // 处理图片上传
-  const file = event.target.files[0];
-  // 在这里你可以对图片进行处理，比如显示预览图等
-  console.log("选择的图片:", file);
-
-  // 使用 URL.createObjectURL 创建临时 URL
-  this.newPost.image = URL.createObjectURL(file);
-},
-    saveAndSubmit() {
-      // 触发 submitPost 事件，并将用户输入的内容传递给父组件
-      this.$emit("submitPost", {
-        title: this.input, // 标题输入框的内容作为帖子标题
-        content: this.newPost.content, // 文本域的内容作为帖子内容
-        image: this.newPost.image // 上传的图片
-      });
-      // 清空输入
-      this.input = "";
-      this.newPost.content = "";
-      this.newPost.image = null;
+      const files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.uploadedImages.push({ url: e.target.result });
+        };
+        reader.readAsDataURL(files[i]);
+      }
+    },
+    removeImage(index) {
+      this.uploadedImages.splice(index, 1);
+    },
+    submitPost() {
+      if (this.title && this.content) {
+        const newPost = {
+          title: this.title,
+          content: this.content,
+          image: this.uploadedImages.length > 0 ? this.uploadedImages[0].url : null
+        };
+        this.$emit('submitPost', newPost);
+        this.resetForm();
+        this.$emit('closeModal');
+      }
+    },
+    closeModal() {
+      this.resetForm();
+      this.$emit('closeModal');
+    },
+    resetForm() {
+      this.title = "";
+      this.content = "";
+      this.uploadedImages = [];
     }
   }
 };
 </script>
 
 <style scoped>
-.new-post-modal{
-  height:70% ;
-
-}
-
-.main-post{
-  padding-top: 50px;
-
-}
-
-.textarea-with-button {
+.new-post-modal {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100px;
-  margin-bottom: 10px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.modal-content {
+  background: white;
+  padding: 20px;
   border-radius: 5px;
-  box-sizing: border-box;
+  width: 400px;
+  max-width: 90%;
 }
 
-.textarea-with-button:focus {
-  outline: none;
-}
-
-.el-button {
+.image-upload {
   margin-top: 10px;
 }
 
+.uploaded-images {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
 
+.uploaded-image {
+  position: relative;
+  margin: 5px;
+}
+
+.uploaded-image img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.uploaded-image button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button {
+  margin-top: 10px;
+}
 </style>
