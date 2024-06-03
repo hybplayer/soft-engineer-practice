@@ -4,7 +4,7 @@
     <div v-for="comment in comments" :key="comment.id" class="comment">
       <div class="comment-header">
         <img :src="comment.avatar" alt="avatar" class="comment-avatar" />
-        <span class="comment-username">{{ comment.username }}</span>
+        <span @click="viewProfile(comment.username)" class="comment-username">{{ comment.username }}</span>
       </div>
       <p class="comment-content">{{ comment.content }}</p>
     </div>
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters } from 'vuex';
+
 export default {
   name: "CommentSection",
   props: {
@@ -30,23 +32,37 @@ export default {
   },
   data() {
     return {
-      comments: [],
       newComment: ""
     };
   },
+  computed: {
+    ...mapState('visitor', ['auth']),
+    ...mapGetters('visitor', ['getComments']),
+    comments() {
+      return this.getComments(this.postId);
+    }
+  },
   methods: {
+    ...mapActions('visitor', ['addComment']),
     submitComment() {
       if (this.newComment.trim()) {
         const newComment = {
-          id: this.comments.length + 1,
-          avatar: require("../assets/user-default.jpg"),
+          id: Date.now(), // 使用时间戳作为唯一 ID
+          postId: this.postId,
+          avatar: this.currentUser.avatar || require("../assets/user-default.jpg"),
           username: this.currentUser.username, // 使用当前登录用户的用户名
           content: this.newComment.trim()
         };
-        this.comments.push(newComment);
+        this.addComment(newComment);
         this.newComment = "";
       }
+    },
+    viewProfile(username) {
+      this.$router.push({ name: 'UserProfile', params: { username } });
     }
+  },
+  created() {
+    this.$store.dispatch('visitor/loadComments'); // 在组件创建时加载评论
   }
 };
 </script>
@@ -76,6 +92,8 @@ export default {
 
 .comment-username {
   font-weight: bold;
+  cursor: pointer;
+  /* 增加指针样式以表明可点击 */
 }
 
 .add-comment {

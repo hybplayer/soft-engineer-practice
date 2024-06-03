@@ -51,7 +51,7 @@ export default {
           id: Date.now(), // 使用时间戳作为唯一 ID
           title: this.title,
           content: this.content,
-          image: this.uploadedImages.length > 0 ? this.uploadedImages[0].url : null
+          images: this.uploadedImages.map(image => image.url)
         };
         this.$emit('submitPost', newPost);
         this.resetForm();

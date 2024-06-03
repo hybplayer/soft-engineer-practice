@@ -10,18 +10,19 @@
         <h3>{{ post.title }}</h3>
         <p>{{ post.content }}</p>
       </div>
-      <div class="forum-img">
-        <img v-if="post.image" :src="post.image" alt="Post Image" />
+      <div class="forum-imgs">
+        <img v-for="(image, index) in post.images" :key="index" :src="image" alt="Post Image" />
       </div>
     </div>
 
-    <CommentSection :postId="post.id" />
+    <CommentSection :postId="post.id" :currentUser="auth" />
   </div>
 </template>
 
 <script>
 import CommentSection from "@/components/CommentSection.vue";
 import defaultAvatar from "../assets/B.jpg"; // 请确保有一个默认头像
+import { mapState } from 'vuex';
 
 export default {
   name: "PostPage",
@@ -43,6 +44,9 @@ export default {
     return {
       defaultAvatar
     }
+  },
+  computed: {
+    ...mapState('visitor', ['auth'])
   }
 };
 </script>
@@ -72,10 +76,11 @@ export default {
   cursor: pointer;
 }
 
-.forum-img img {
+.forum-imgs img {
   height: 100px;
   width: auto;
   padding-right: 15px;
+  margin-bottom: 10px;
 }
 
 .forum {

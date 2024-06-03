@@ -7,30 +7,35 @@ const store = createStore({
       state: {
         auth: {
           isAuthenticated: false,
-          username: '', // 确保这里存储了当前登录用户的用户名
+          username: '',
+          avatar: '',
           password: '',
           hobby: ''
         },
         users: [],
         destinationData: JSON.parse(localStorage.getItem('destinationData')) || [],
-        posts: JSON.parse(localStorage.getItem('posts')) || [] // 新增 posts 状态
+        posts: JSON.parse(localStorage.getItem('posts')) || [],
+        comments: JSON.parse(localStorage.getItem('comments')) || [] // 新增 comments 状态
       },
       mutations: {
         login(state, user) {
           state.auth.isAuthenticated = true;
           state.auth.username = user.username;
+          state.auth.avatar = user.avatar || '';
           state.auth.password = user.password;
           state.auth.hobby = user.hobby || '';
         },
         logout(state) {
           state.auth.isAuthenticated = false;
           state.auth.username = '';
+          state.auth.avatar = '';
           state.auth.password = '';
           state.auth.hobby = '';
         },
         register(state, user) {
           state.auth.isAuthenticated = true;
           state.auth.username = user.username;
+          state.auth.avatar = user.avatar || '';
           state.auth.password = user.password;
           state.auth.hobby = user.hobby || '';
           state.users.push(user);
@@ -46,9 +51,11 @@ const store = createStore({
           const userIndex = state.users.findIndex(user => user.username === state.auth.username);
           if (userIndex !== -1) {
             state.users[userIndex].username = payload.newNickname || state.users[userIndex].username;
+            state.users[userIndex].avatar = payload.avatar || state.users[userIndex].avatar;
             state.users[userIndex].password = payload.newPassword || state.users[userIndex].password;
             state.users[userIndex].hobby = payload.hobby || state.users[userIndex].hobby;
             state.auth.username = payload.newNickname || state.auth.username;
+            state.auth.avatar = payload.avatar || state.auth.avatar;
             state.auth.password = payload.newPassword || state.auth.password;
             state.auth.hobby = payload.hobby || state.auth.hobby;
             localStorage.setItem('users', JSON.stringify(state.users));
@@ -66,14 +73,24 @@ const store = createStore({
           state.destinationData.splice(index, 1);
           localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
         },
-        addPost(state, post) { // 新增 addPost mutation
+        addPost(state, post) {
           state.posts.unshift(post);
           localStorage.setItem('posts', JSON.stringify(state.posts));
         },
-        loadPosts(state) { // 新增 loadPosts mutation
+        loadPosts(state) {
           const posts = JSON.parse(localStorage.getItem('posts'));
           if (posts) {
             state.posts = posts;
+          }
+        },
+        addComment(state, comment) { // 新增 addComment mutation
+          state.comments.push(comment);
+          localStorage.setItem('comments', JSON.stringify(state.comments));
+        },
+        loadComments(state) { // 新增 loadComments mutation
+          const comments = JSON.parse(localStorage.getItem('comments'));
+          if (comments) {
+            state.comments = comments;
           }
         }
       },
@@ -100,15 +117,27 @@ const store = createStore({
         deleteDestinationData({ commit }, index) {
           commit('deleteDestinationData', index);
         },
-        addPost({ commit, state }, post) { // 新增 addPost action
+        addPost({ commit, state }, post) {
           const postWithUsername = {
             ...post,
-            username: state.auth.username
+            username: state.auth.username,
+            avatar: state.auth.avatar
           };
           commit('addPost', postWithUsername);
         },
-        loadPosts({ commit }) { // 新增 loadPosts action
+        loadPosts({ commit }) {
           commit('loadPosts');
+        },
+        addComment({ commit, state }, comment) { // 新增 addComment action
+          const commentWithUsername = {
+            ...comment,
+            username: state.auth.username,
+            avatar: state.auth.avatar
+          };
+          commit('addComment', commentWithUsername);
+        },
+        loadComments({ commit }) { // 新增 loadComments action
+          commit('loadComments');
         }
       },
       getters: {
@@ -116,7 +145,10 @@ const store = createStore({
           return state.destinationData.filter(destination => destination.username === username);
         },
         getUsers: (state) => state.users,
-        getPosts: (state) => state.posts // 新增 getPosts getter
+        getPosts: (state) => state.posts,
+        getComments: (state) => (postId) => { // 新增 getComments getter
+          return state.comments.filter(comment => comment.postId === postId);
+        }
       }
     }
   }
