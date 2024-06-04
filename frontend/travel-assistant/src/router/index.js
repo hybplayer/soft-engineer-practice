@@ -10,16 +10,15 @@ import ForumPage from '../views/ForumPage.vue';
 import store from '../store';  // 导入 store
 
 const routes = [
-  { path: '/', component: Home, name: 'Home' },
-  // { path: '/profile', component: Profile, name: 'Profile' },
-  { path: '/travel-intention', component: TravelIntention, name: 'TravelIntention' },
-  { path: '/login', component: LoginRegister, name: 'Login' },
-  { path: '/register', component: LoginRegister, name: 'Register' },
-  { path: '/team-formation', component: TeamFormation, name: 'TeamFormation' },
-  { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning' },
-  { path: '/forumpage', component: ForumPage, name: 'ForumPage' },
-  { path: '/user/:username', component: Profile, name: 'UserProfile', props: true },
-  { path: '/:catchAll(.*)', component: NotFound, name: 'NotFound' }
+  { path: '/', component: Home, name: 'Home', meta: { showFooter: true } },
+  { path: '/travel-intention', component: TravelIntention, name: 'TravelIntention', meta: { showFooter: true } },
+  { path: '/login', component: LoginRegister, name: 'Login', meta: { showFooter: true } },
+  { path: '/register', component: LoginRegister, name: 'Register', meta: { showFooter: false } },
+  { path: '/team-formation', component: TeamFormation, name: 'TeamFormation', meta: { showFooter: true } },
+  { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning', meta: { showFooter: false } },
+  { path: '/forumpage', component: ForumPage, name: 'ForumPage', meta: { showFooter: true } },
+  { path: '/user/:username', component: Profile, name: 'UserProfile', props: true, meta: { showFooter: false } },
+  { path: '/:catchAll(.*)', component: NotFound, name: 'NotFound', meta: { showFooter: false } }
 ];
 
 const router = createRouter({

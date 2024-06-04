@@ -4,7 +4,7 @@
     <main>
       <router-view></router-view>
     </main>
-    <AppFooter />
+    <AppFooter v-if="showFooter" />
   </div>
 </template>
 
@@ -16,6 +16,11 @@ export default {
   components: {
     AppHeader,
     AppFooter
+  },
+  computed: {
+    showFooter() {
+      return this.$route.meta.showFooter;
+    }
   }
 };
 </script>
