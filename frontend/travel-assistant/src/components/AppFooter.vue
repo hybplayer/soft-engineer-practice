@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <p>&copy; 2024 在线驴友辅助系统</p>
+    <p>&copy; 2024 驴友辅助系统</p>
   </footer>
 </template>
 

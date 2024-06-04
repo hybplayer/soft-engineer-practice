@@ -15,7 +15,7 @@ const store = createStore({
         users: [],
         destinationData: JSON.parse(localStorage.getItem('destinationData')) || [],
         posts: JSON.parse(localStorage.getItem('posts')) || [],
-        comments: JSON.parse(localStorage.getItem('comments')) || [] // 新增 comments 状态
+        comments: JSON.parse(localStorage.getItem('comments')) || []
       },
       mutations: {
         login(state, user) {
@@ -83,11 +83,11 @@ const store = createStore({
             state.posts = posts;
           }
         },
-        addComment(state, comment) { // 新增 addComment mutation
+        addComment(state, comment) {
           state.comments.push(comment);
           localStorage.setItem('comments', JSON.stringify(state.comments));
         },
-        loadComments(state) { // 新增 loadComments mutation
+        loadComments(state) {
           const comments = JSON.parse(localStorage.getItem('comments'));
           if (comments) {
             state.comments = comments;
@@ -128,7 +128,7 @@ const store = createStore({
         loadPosts({ commit }) {
           commit('loadPosts');
         },
-        addComment({ commit, state }, comment) { // 新增 addComment action
+        addComment({ commit, state }, comment) {
           const commentWithUsername = {
             ...comment,
             username: state.auth.username,
@@ -136,7 +136,7 @@ const store = createStore({
           };
           commit('addComment', commentWithUsername);
         },
-        loadComments({ commit }) { // 新增 loadComments action
+        loadComments({ commit }) {
           commit('loadComments');
         }
       },
@@ -146,8 +146,14 @@ const store = createStore({
         },
         getUsers: (state) => state.users,
         getPosts: (state) => state.posts,
-        getComments: (state) => (postId) => { // 新增 getComments getter
+        getComments: (state) => (postId) => {
           return state.comments.filter(comment => comment.postId === postId);
+        },
+        getUserDestinations: (state) => (username) => {
+          const destinations = state.destinationData
+            .filter(destination => destination.username === username)
+            .map(destination => destination.destination);
+          return destinations.join(', ');
         }
       }
     }

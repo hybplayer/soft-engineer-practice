@@ -8,7 +8,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="hobby" label="旅游爱好"></el-table-column>
-      <el-table-column prop="destination" label="目的地"></el-table-column>
+      <el-table-column prop="destinations" label="目的地"></el-table-column>
     </el-table>
   </div>
 </template>
@@ -19,14 +19,14 @@ import { mapGetters, mapState } from 'vuex';
 export default {
   computed: {
     ...mapState('visitor', ['auth']),
-    ...mapGetters('visitor', ['getUsers']),
+    ...mapGetters('visitor', ['getUsers', 'getUserDestinations']),
     userList() {
       return this.getUsers
         .filter(user => user.username !== this.auth.username) // 排除当前用户
         .map(user => ({
           username: user.username,
           hobby: user.hobby,
-          destination: user.destination
+          destinations: this.getUserDestinations(user.username) || '未指定'
         }));
     }
   }

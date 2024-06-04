@@ -11,7 +11,7 @@ import store from '../store';  // 导入 store
 
 const routes = [
   { path: '/', component: Home, name: 'Home' },
-  { path: '/profile', component: Profile, name: 'Profile' },
+  // { path: '/profile', component: Profile, name: 'Profile' },
   { path: '/travel-intention', component: TravelIntention, name: 'TravelIntention' },
   { path: '/login', component: LoginRegister, name: 'Login' },
   { path: '/register', component: LoginRegister, name: 'Register' },
