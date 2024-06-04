@@ -1,26 +1,30 @@
 <template>
-  <div class="route-planning">
-    <h2>路线规划</h2>
-    <form @submit.prevent="searchRoute">
-      <label v-for="(location, index) in locations" :key="index">
-        途经点{{ index + 1 }}：
-        <input v-model="locations[index]" placeholder="输入地名" />
-        <button @click="removeLocation(index)" type="button">移除</button>
-      </label>
-      <button type="button" @click="addLocation">添加途经点</button>
-      <button type="submit">搜索路线</button>
-    </form>
-    <div class="content">
-      <div id="route-info">
+  <div class="route-planning" @wheel.prevent>
+    <div class="sidebar">
+      <h2>路线规划</h2>
+      <form @submit.prevent="searchRoute">
+        <div class="form-group" v-for="(location, index) in locations" :key="index">
+          <label :for="'location' + index">途经点{{ index + 1 }}：</label>
+          <div class="input-group mb-2">
+            <input v-model="locations[index]" :id="'location' + index" class="form-control" placeholder="输入地名" />
+            <div class="input-group-append">
+              <button @click="removeLocation(index)" type="button" class="btn btn-danger">移除</button>
+            </div>
+          </div>
+        </div>
+        <button type="button" @click="addLocation" class="btn btn-primary mb-2">添加途经点</button>
+        <button type="submit" class="btn btn-success">搜索路线</button>
+      </form>
+      <div class="route-info">
         <h3>路线顺序:</h3>
-        <ol>
-          <li v-for="(location, index) in routeOrder" :key="index">
+        <ol class="list-group">
+          <li v-for="(location, index) in routeOrder" :key="index" class="list-group-item">
             {{ index + 1 }}. {{ location }}
           </li>
         </ol>
       </div>
-      <div id="map"></div>
     </div>
+    <div id="map" class="map-container"></div>
   </div>
 </template>
 
@@ -57,23 +61,18 @@ export default {
       try {
         const BMap = window.BMap;
         this.map = new BMap.Map("map");
-        this.map.centerAndZoom(new BMap.Point(116.404, 39.915), 5);
+        this.map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);
+        this.map.enableScrollWheelZoom(true); // 启用滚轮缩放
         this.geocoder = new BMap.Geocoder();
         this.driving = new BMap.DrivingRoute(this.map, {
           renderOptions: { map: this.map, autoViewport: true }
         });
-
-        // 防止跳转到百度地图的网页
-        this.map.addEventListener('click', (e) => {
-          e.domEvent.preventDefault();
-        });
-
-        // 添加缩放监听事件，捕捉并处理缩放过程中可能出现的错误
-        this.map.addEventListener('zoomend', () => {
-          console.log('地图缩放完成');
+        // 禁用页面滚动
+        document.querySelector('.route-planning').addEventListener('wheel', (e) => {
+          e.preventDefault();
         });
       } catch (error) {
-        console.error('初始化地图时发生错误:', error);
+        console.error('初始化百度地图失败', error);
       }
     },
     addLocation() {
@@ -159,12 +158,12 @@ export default {
 
       for (let i = 0; i < points.length - 1; i++) {
         const driving = new BMap.DrivingRoute(this.map, {
-          renderOptions: { map: this.map, autoViewport: true }
+          renderOptions: {map: this.map, autoViewport: true}
         });
         driving.search(points[i].point, points[i + 1].point);
 
         const marker = new BMap.Marker(points[i].point);
-        const label = new BMap.Label(i + 1, { position: points[i].point });
+        const label = new BMap.Label(i + 1, {position: points[i].point});
         marker.setLabel(label);
         this.map.addOverlay(marker);
       }
@@ -172,7 +171,7 @@ export default {
       // 添加最后一个点的标记
       const lastPoint = points[points.length - 1].point;
       const lastMarker = new BMap.Marker(lastPoint);
-      const lastLabel = new BMap.Label(points.length, { position: lastPoint });
+      const lastLabel = new BMap.Label(points.length, {position: lastPoint});
       lastMarker.setLabel(lastLabel);
       this.map.addOverlay(lastMarker);
     },
@@ -184,37 +183,52 @@ export default {
 </script>
 
 <style scoped>
-#map {
-  width: 100%;
-  height: 500px;
-  float: left;
-}
-
-.route-planning form {
-  margin-bottom: 10px;
-}
-
-.route-planning label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.route-planning button {
-  margin-right: 10px;
-  margin-top: 10px;
-}
-
-.content {
+.route-planning {
   display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 300px;
+  height: 95%;
+  background-color: #f8f9fa;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  overflow-y: auto;
+}
+
+.map-container {
+  flex: 1;
+  height: 100%;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  display: flex;
+}
+
+.input-group-append {
+  margin-left: 0.5rem;
+}
+
+.btn {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.route-info {
   margin-top: 20px;
 }
 
-#route-info {
-  width: 30%;
-  margin-left: 20px;
+.route-info h3 {
+  margin-bottom: 10px;
 }
 
-#route-info ol {
+.route-info ol {
   padding-left: 20px;
 }
 </style>
