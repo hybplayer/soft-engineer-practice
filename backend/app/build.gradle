@@ -35,6 +35,10 @@ dependencies {
     // Spring Boot Starter for Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.0'
 
+    // lombok
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor('org.projectlombok:lombok:1.18.22')
+
 }
 
 application {

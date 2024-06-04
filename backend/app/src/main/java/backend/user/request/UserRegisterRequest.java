@@ -1,6 +1,6 @@
 package backend.user.request;
 
-public class UserRequest {
+public class UserRegisterRequest {
     private String username;
     private String password;
 

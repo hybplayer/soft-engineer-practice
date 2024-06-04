@@ -58,5 +58,12 @@ public class UserService {
             userRepository.save(user);
         }
     }
+
+    public void deleteUser(Long userID) {
+        User user = userRepository.findById(userID).orElse(null);
+        if (user != null) {
+            userRepository.delete(user);
+        }
+    }
 }
 
