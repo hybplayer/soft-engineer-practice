@@ -49,7 +49,7 @@ export default {
         const newComment = {
           id: Date.now(), // 使用时间戳作为唯一 ID
           postId: this.postId,
-          avatar: this.currentUser.avatar || require("../assets/user-default.jpg"),
+          avatar: this.currentUser.avatar || require("../assets/user-default.png"),
           username: this.currentUser.username, // 使用当前登录用户的用户名
           content: this.newComment.trim()
         };
