@@ -19,13 +19,14 @@ public class TripController {
     @PostMapping("/create")
     public ResponseEntity<Trip> createTrip(@RequestBody TripCreateRequest request) {
         Trip newTrip = new Trip();
-        newTrip.setTitle(request.getTitle());
         newTrip.setOrganizer(request.getOrganizer());
         newTrip.setDestinations(request.getDestinations());
-        newTrip.setStartDate(request.getStartDate());
-        newTrip.setEndDate(request.getEndDate());
+        newTrip.setDeparturePlace(request.getDeparturePlace());
+        newTrip.setStartDate(request.getEndDate());
+        newTrip.setOptions(request.getoptions());
         newTrip.setPrice(request.getPrice());
-        newTrip.setDescription(request.getDescription());
+        newTrip.setDescriptionParticipants(request.getDescriptionParticipants());
+        newTrip.setRemark(request.getRemark());
         return ResponseEntity.ok(tripService.createTrip(newTrip));
     }
 

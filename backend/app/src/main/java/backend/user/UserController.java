@@ -19,12 +19,15 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody UserRegisterRequest request) {
-        User registeredUser = userService.registerNewUser(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(registeredUser);
+        User registeredUser = new User();
+        registeredUser.setUsername(request.getUsername());
+        registeredUser.setPassward(request.getPassword());
+        registeredUser.setTripPreference(request.getTripPreference());
+        return ResponseEntity.ok(userService.);
     }
 
     @GetMapping("/login")
-    public ResponseEntity<Long> loginUser(@RequestBody UserRegisterRequest request) {
+    public ResponseEntity<Long> loginUser(@RequestBody UserLoginRequest request) {
         // return user id if login is successful
         if (userService.loginUser(request.getUsername(), request.getPassword())) {
             User user = userService.getUserByUsername(request.getUsername());
@@ -45,44 +48,51 @@ public class UserController {
     }
 
     @PutMapping("/{userID}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userID, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable Long userID, @RequestBody UserRegisterRequest request) {
         User existingUserByID = userService.getUserByID(userID);    
-        User existingUserByUsername = userService.getUserByUsername(user.getUsername());
+        // User existingUserByUsername = userService.getUserByUsername(request.getUsername());
 
         if (existingUserByID == null) {
             return ResponseEntity.notFound().build();
         }
 
-        if (existingUserByUsername != null && existingUserByUsername.getId().equals(userID)) {
-            user.setId(userID);
-            User updatedUser = userService.updateUser(user);
-            return ResponseEntity.ok(updatedUser);
-        }
+        // if (existingUserByUsername != null && existingUserByUsername.getId().equals(userID)) {
+        //     User newUser = new User();
+        //
+        //     return ResponseEntity.ok();
+        // }
 
-        return ResponseEntity.badRequest().build();
-    }
-
-    @PatchMapping("/{userID}/addTripPreference")
-    public ResponseEntity<User> addTripPreference(@PathVariable Long userID, @RequestBody String tripPreference) {
-        User user = userService.getUserByID(userID);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        user.addTripPreference(tripPreference);
+        User newUser = new User();
+        newUser.setId(userID);
+        newUser.setUsername(request.getUsername());
+        newUser.setPassward(request.getPassword());
+        newUser.setTripPreference(request.getTripPreference());
         User updatedUser = userService.updateUser(user);
+
         return ResponseEntity.ok(updatedUser);
     }
 
-    @PatchMapping("/{userID}/removeTripPreference")
-    public ResponseEntity<User> removeTripPreference(@PathVariable Long userID, @RequestBody String tripPreference) {
-        User user = userService.getUserByID(userID);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        user.removeTripPreference(tripPreference);
-        User updatedUser = userService.updateUser(user);
-        return ResponseEntity.ok(updatedUser);
-    }
+    // @PatchMapping("/{userID}/addTripPreference")
+    // public ResponseEntity<User> addTripPreference(@PathVariable Long userID, @RequestBody String tripPreference) {
+    //     User user = userService.getUserByID(userID);
+    //     if (user == null) {
+    //         return ResponseEntity.notFound().build();
+    //     }
+    //     user.addTripPreference(tripPreference);
+    //     User updatedUser = userService.updateUser(user);
+    //     return ResponseEntity.ok(updatedUser);
+    // }
+
+    // @PatchMapping("/{userID}/removeTripPreference")
+    // public ResponseEntity<User> removeTripPreference(@PathVariable Long userID, @RequestBody String tripPreference) {
+    //     User user = userService.getUserByID(userID);
+    //     if (user == null) {
+    //         return ResponseEntity.notFound().build();
+    //     }
+    //     user.removeTripPreference(tripPreference);
+    //     User updatedUser = userService.updateUser(user);
+    //     return ResponseEntity.ok(updatedUser);
+    // }
 
     @DeleteMapping("/{userID}")
     public ResponseEntity<User> deleteUser(@PathVariable Long userID) {

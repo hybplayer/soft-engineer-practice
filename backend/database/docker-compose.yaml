@@ -17,6 +17,7 @@ services:
     networks:
       default:
         ipv4_address: 172.22.4.13
+    restart: always
       
 networks:
   default:

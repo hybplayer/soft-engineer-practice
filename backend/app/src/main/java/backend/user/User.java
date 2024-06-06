@@ -25,27 +25,24 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = true)
-    private String email = null;
-
-    @ElementCollection
-    private List<String> tripPreferences = new ArrayList<String>();
+    @Column(nullable = false)
+    private String tripPreference;
 
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Trip> trips = new ArrayList<Trip>();
 
-    @ManyToMany(mappedBy = "participants")
-    private List<Trip> participatedTrips = new ArrayList<Trip>();
+    // @ManyToMany(mappedBy = "participants")
+    // private List<Trip> participatedTrips = new ArrayList<Trip>();
 
     // constructor 方法由 lombok 自动生成
 
     // getter和setter方法由 lombok 自动生成
 
-    public void addTripPreference(String tripPrefference) {
-        this.tripPreferences.add(tripPrefference);
-    }
+    // public void addTripPreference(String tripPrefference) {
+    //     this.tripPreferences.add(tripPrefference);
+    // }
 
-    public void removeTripPreference(String tripPrefference) {
-        this.tripPreferences.remove(tripPrefference);
-    }
+    // public void removeTripPreference(String tripPrefference) {
+    //     this.tripPreferences.remove(tripPrefference);
+    // }
 }

@@ -13,13 +13,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User registerNewUser(String username, String password) {
-        if (userRepository.findByUsername(username) != null) {
+    public User registerNewUser(User newUser) {
+        if (userRepository.findByUsername(newUser.getUsername()) != null) {
+            // TODO: 这里不该抛出异常
             throw new IllegalStateException("Username already exists");
         }
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(password); // 在实际应用中，密码应该被加密
         return userRepository.save(newUser);
     }
 
@@ -43,21 +41,21 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void addTripPreference(Long userID, String tripPreference) {
-        User user = userRepository.findById(userID).orElse(null);
-        if (user != null) {
-            user.addTripPreference(tripPreference);
-            userRepository.save(user);
-        }
-    }
+    // public void addTripPreference(Long userID, String tripPreference) {
+    //     User user = userRepository.findById(userID).orElse(null);
+    //     if (user != null) {
+    //         user.addTripPreference(tripPreference);
+    //         userRepository.save(user);
+    //     }
+    // }
 
-    public void removeTripPreference(Long userID, String tripPreference) {
-        User user = userRepository.findById(userID).orElse(null);
-        if (user != null) {
-            user.removeTripPreference(tripPreference);
-            userRepository.save(user);
-        }
-    }
+    // public void removeTripPreference(Long userID, String tripPreference) {
+    //     User user = userRepository.findById(userID).orElse(null);
+    //     if (user != null) {
+    //         user.removeTripPreference(tripPreference);
+    //         userRepository.save(user);
+    //     }
+    // }
 
     public void deleteUser(Long userID) {
         User user = userRepository.findById(userID).orElse(null);

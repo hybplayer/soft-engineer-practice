@@ -1,0 +1,15 @@
+server:
+  port: 20334
+
+spring:
+  datasource:
+    url: jdbc:postgresql://eth.jht213.com:25432/lv_friends
+    username: lv_admin
+    password: 123456
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
