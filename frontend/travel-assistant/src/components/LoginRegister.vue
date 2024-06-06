@@ -46,7 +46,8 @@
 <script>
 import { ElMessage } from 'element-plus';
 import { mapState } from 'vuex';
-import { User, Lock } from '@element-plus/icons-vue'; // 导入图标
+import { User, Lock } from '@element-plus/icons-vue';
+import api from '@/api';
 
 export default {
   components: {
@@ -82,54 +83,47 @@ export default {
     toggleMode(isLogin) {
       this.isLogin = isLogin;
     },
-    submitForm() {
-      this.$refs.form.validate((valid) => {
+    async submitForm() {
+      this.$refs.form.validate(async (valid) => {
         if (valid) {
-          if (this.isLogin) {
-            // 登录逻辑
-            const user = this.users.find(
-              user => user.username === this.form.username && user.password === this.form.password
-            );
-            if (user) {
-              this.$store.commit('visitor/login', user);
+          try {
+            let response;
+            if (this.isLogin) {
+              console.log("Logging in with:", this.form);
+              response = await api.login(this.form);
+              console.log("Login response:", response.data); // 添加日志
+              this.$store.commit('visitor/login', response.data);
+              await this.$store.dispatch('visitor/loadUser', response.data.username); // 注册成功后加载当前用户数据
               ElMessage.success('登录成功');
-              this.$router.push({ name: 'Home' });
+              this.$router.push({ name: 'UserProfile', params: { username: response.data.username } }); // 跳转到用户主页
             } else {
-              ElMessage.error('用户名或密码错误');
+              if (this.form.password !== this.form.confirmPassword) {
+                ElMessage.error('密码和确认密码不一致');
+                return;
+              }
+              console.log("Registering with:", this.form);
+              response = await api.register(this.form);
+              console.log("Register response:", response.data); // 添加日志
+              this.$store.commit('visitor.register', response.data);
+              await this.$store.dispatch('visitor/loadUsers');
+              ElMessage.success('注册成功');
+              this.$router.push({ name: 'UserProfile', params: { username: response.data.username } }); // 跳转到用户主页
             }
-          } else {
-            // 注册逻辑
-            if (this.form.password !== this.form.confirmPassword) {
-              ElMessage.error('密码和确认密码不一致');
-              return;
-            }
-            const userExists = this.users.some(user => user.username === this.form.username);
-            if (userExists) {
-              ElMessage.error('用户名已存在');
-              return;
-            }
-            const newUser = {
-              username: this.form.username,
-              password: this.form.password
-            };
-            this.$store.dispatch('visitor/register', newUser);
-            ElMessage.success('注册成功');
-            this.$router.push({ name: 'Home' });
+          } catch (error) {
+            console.error("API error:", error);
+            ElMessage.error(error.response ? error.response.data : '请求失败');
           }
         } else {
           console.log('表单验证失败');
         }
       });
     }
-  },
-  created() {
-    this.$store.dispatch('visitor/loadUsers'); // 加载本地存储中的用户数据
   }
 };
+
 </script>
 
 <style scoped>
-/* 登录页面样式 */
 .login-register-page {
   background-image: url('@/assets/A.jpg');
   background-size: cover;

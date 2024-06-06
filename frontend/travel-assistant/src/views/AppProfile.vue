@@ -45,8 +45,8 @@
 
     <!-- 显示用户信息 -->
     <div v-else>
-      <p><strong>昵称:</strong> {{ currentUser.username }}</p>
-      <p><strong>旅游爱好:</strong> {{ currentUser.hobby }}</p>
+      <p><strong>昵称:</strong> {{ username }}</p>
+      <p><strong>旅游爱好:</strong> {{ hobby }}</p>
     </div>
 
     <!-- 新增数据存放区域 -->
@@ -117,20 +117,20 @@
         <el-button type="primary" @click="saveEdit">保存</el-button>
       </template>
     </el-dialog>
-
-    <!-- 评论组件 -->
-    <CommentSection :postId="postId" :currentUser="currentUser" />
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { ElMessage } from 'element-plus';
-import CommentSection from '@/components/CommentSection.vue'; // 导入评论组件
+// import { Eye, EyeOff } from '@element-plus/icons-vue';
+// import CommentSection from '@/components/CommentSection.vue'; // 导入评论组件
 
 export default {
   components: {
-    CommentSection
+    // CommentSection,
+    // Eye,
+    // EyeOff
   },
   props: {
     username: {
@@ -165,7 +165,7 @@ export default {
     ...mapState('visitor', ['auth']),
     ...mapGetters('visitor', ['getUsers']),
     destinationData() {
-      return this.$store.getters['visitor/getDestinationData'](this.currentUser.username);
+      return this.$store.getters['visitor/getDestinationData'](this.username);
     },
     priceRangeMap() {
       return {
@@ -175,15 +175,12 @@ export default {
         4: '5000元以上'
       };
     },
-    currentUser() {
-      return this.username ? this.getUsers.find(user => user.username === this.username) : this.auth;
-    },
     isCurrentUser() {
-      return this.currentUser.username === this.auth.username;
+      return this.username === this.auth.username;
     }
   },
   methods: {
-    ...mapActions('visitor', ['updateUserInfo', 'updateDestinationData', 'editDestinationData', 'deleteDestinationData']),
+    ...mapActions('visitor', ['updateUserInfo', 'updateDestinationData', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile']),
     updateUsername() {
       if (this.newNickname) {
         const userExists = this.getUsers.some(user => user.username === this.newNickname);
@@ -191,7 +188,7 @@ export default {
           ElMessage.error('用户名已存在');
           return;
         }
-        this.updateUserInfo({ newNickname: this.newNickname, newPassword: this.currentUser.password, hobby: this.hobby })
+        this.updateUserInfo({ newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
             ElMessage.success('昵称保存成功');
           })
@@ -206,7 +203,7 @@ export default {
         ElMessage.error('新密码和确认新密码不一致');
         return;
       }
-      this.updateUserInfo({ newNickname: this.currentUser.username, newPassword: this.newPassword, hobby: this.hobby })
+      this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
         .then(() => {
           ElMessage.success('密码保存成功');
         })
@@ -217,7 +214,7 @@ export default {
     },
     updateHobby() {
       if (this.hobby) {
-        this.updateUserInfo({ newNickname: this.currentUser.username, newPassword: this.currentUser.password, hobby: this.hobby })
+        this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
             ElMessage.success('爱好保存成功');
           })
@@ -265,9 +262,10 @@ export default {
         });
     }
   },
-  created() {
-    this.newNickname = this.currentUser.username;
-    this.hobby = this.currentUser.hobby || '';
+  async created() {
+    const userData = await this.$store.dispatch('visitor/fetchUserProfile', this.username);
+    this.newNickname = userData.username || '';
+    this.hobby = userData.hobby || '';
     this.hobbyLength = this.hobby.length;
   }
 };

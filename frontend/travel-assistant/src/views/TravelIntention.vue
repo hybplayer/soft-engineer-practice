@@ -75,14 +75,14 @@ export default {
     };
   },
   methods: {
-    ...mapActions('visitor', ['updateDestinationData']), // 引入更新目的地数据的动作
+    ...mapActions('visitor', ['addDestinationData']), // 使用 Vuex Action 更新目的地数据
     handleSubmit() {
       if (!this.departure || !this.destination || !this.departureDate || this.checkboxValues.length === 0 || !this.priceRange || !this.companionRequirements || !this.remark) {
         ElMessage.error('提交失败，请填写完整表格');
         return;
       }
 
-      this.updateDestinationData({ // 更新目的地数据
+      this.addDestinationData({ // 更新目的地数据
         departure: this.departure,
         destination: this.destination,
         departureDate: this.departureDate,
@@ -90,9 +90,22 @@ export default {
         priceRange: this.priceRange,
         companionRequirements: this.companionRequirements,
         remark: this.remark
+      }).then(() => {
+        ElMessage.success('提交成功');
+        this.clearForm();
+      }).catch((error) => {
+        ElMessage.error('提交失败');
+        console.error(error);
       });
-
-      ElMessage.success('提交成功');
+    },
+    clearForm() {
+      this.departure = '';
+      this.destination = '';
+      this.departureDate = '';
+      this.checkboxValues = [];
+      this.priceRange = '';
+      this.companionRequirements = '';
+      this.remark = '';
     }
   }
 };

@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import axios from 'axios';
 
 const store = createStore({
   modules: {
@@ -12,10 +13,16 @@ const store = createStore({
           password: '',
           hobby: ''
         },
+        currentProfile: {
+          username: '',
+          hobby: '',
+          avatar: '',
+          password: ''
+        },
         users: [],
-        destinationData: JSON.parse(localStorage.getItem('destinationData')) || [],
-        posts: JSON.parse(localStorage.getItem('posts')) || [],
-        comments: JSON.parse(localStorage.getItem('comments')) || []
+        destinationData: [],
+        posts: [],
+        comments: []
       },
       mutations: {
         login(state, user) {
@@ -32,112 +39,155 @@ const store = createStore({
           state.auth.password = '';
           state.auth.hobby = '';
         },
-        register(state, user) {
-          state.auth.isAuthenticated = true;
-          state.auth.username = user.username;
-          state.auth.avatar = user.avatar || '';
-          state.auth.password = user.password;
-          state.auth.hobby = user.hobby || '';
-          state.users.push(user);
-          localStorage.setItem('users', JSON.stringify(state.users));
-        },
-        loadUsers(state) {
-          const users = JSON.parse(localStorage.getItem('users'));
-          if (users) {
-            state.users = users;
-          }
+        loadUsers(state, users) {
+          state.users = users;
         },
         updateUserInfo(state, payload) {
-          const userIndex = state.users.findIndex(user => user.username === state.auth.username);
-          if (userIndex !== -1) {
-            state.users[userIndex].username = payload.newNickname || state.users[userIndex].username;
-            state.users[userIndex].avatar = payload.avatar || state.users[userIndex].avatar;
-            state.users[userIndex].password = payload.newPassword || state.users[userIndex].password;
-            state.users[userIndex].hobby = payload.hobby || state.users[userIndex].hobby;
-            state.auth.username = payload.newNickname || state.auth.username;
-            state.auth.avatar = payload.avatar || state.auth.avatar;
-            state.auth.password = payload.newPassword || state.auth.password;
-            state.auth.hobby = payload.hobby || state.auth.hobby;
-            localStorage.setItem('users', JSON.stringify(state.users));
-          }
+          state.auth.username = payload.newNickname || state.auth.username;
+          state.auth.avatar = payload.avatar || state.auth.avatar;
+          state.auth.password = payload.newPassword || state.auth.password;
+          state.auth.hobby = payload.hobby || state.auth.hobby;
         },
-        updateDestinationData(state, payload) {
-          state.destinationData.push(payload);
-          localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
+        setDestinationData(state, data) {
+          state.destinationData = data;
+        },
+        addDestinationData(state, destination) {
+          state.destinationData.push(destination);
         },
         editDestinationData(state, { index, data }) {
           state.destinationData.splice(index, 1, data);
-          localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
         },
-        deleteDestinationData(state, index) {
-          state.destinationData.splice(index, 1);
-          localStorage.setItem('destinationData', JSON.stringify(state.destinationData));
-        },
-        addPost(state, post) {
-          state.posts.unshift(post);
-          localStorage.setItem('posts', JSON.stringify(state.posts));
-        },
-        loadPosts(state) {
-          const posts = JSON.parse(localStorage.getItem('posts'));
-          if (posts) {
-            state.posts = posts;
+        deleteDestinationData(state, id) {
+          const index = state.destinationData.findIndex(dest => dest.id === id);
+          if (index !== -1) {
+            state.destinationData.splice(index, 1);
           }
         },
-        addComment(state, comment) {
-          state.comments.push(comment);
-          localStorage.setItem('comments', JSON.stringify(state.comments));
-        },
-        loadComments(state) {
-          const comments = JSON.parse(localStorage.getItem('comments'));
-          if (comments) {
-            state.comments = comments;
-          }
+        setCurrentProfile(state, profile) {
+          state.currentProfile.username = profile.username;
+          state.currentProfile.hobby = profile.hobby;
+          state.currentProfile.avatar = profile.avatar;
+          state.currentProfile.password = profile.password;
         }
       },
       actions: {
-        updateUserInfo({ commit }, payload) {
-          commit('updateUserInfo', payload);
+        async login({ commit }, credentials) {
+          try {
+            const response = await axios.post('/api/login', credentials);
+            commit('login', response.data);
+            return response.data;
+          } catch (error) {
+            throw new Error('登录失败');
+          }
         },
-        register({ commit }, user) {
-          commit('register', user);
+        async register({ commit }, user) {
+          try {
+            const response = await axios.post('/api/register', user);
+            commit('login', response.data);
+            return response.data;
+          } catch (error) {
+            throw new Error('注册失败');
+          }
         },
-        loadUsers({ commit }) {
-          commit('loadUsers');
+        async loadUser({ commit }, username) {
+          try {
+            console.log(`Fetching user profile for: ${username}`);
+            const response = await axios.get(`/api/users/${username}`);
+            commit('loadUser', response.data);
+          } catch (error) {
+            console.error('加载用户数据失败:', error);
+          }
         },
-        updateDestinationData({ commit, state }, payload) {
-          const dataWithUsername = {
-            ...payload,
-            username: state.auth.username
-          };
-          commit('updateDestinationData', dataWithUsername);
+        async fetchCurrentUser({ state, commit }) {
+          try {
+            const response = await axios.get(`/api/users/${state.auth.username}`); // 根据当前用户名动态获取用户数据
+            commit('login', response.data);
+          } catch (error) {
+            console.error('获取当前用户数据失败:', error);
+          }
         },
-        editDestinationData({ commit }, payload) {
-          commit('editDestinationData', payload);
+        async fetchUserProfile({ commit }, username) {
+          try {
+            console.log(`Fetching user profile for: ${username}`); // 打印URL调试
+            const response = await axios.get(`/api/users/${username}`);
+            commit('setCurrentProfile', response.data);
+            return response.data;
+          } catch (error) {
+            console.error('获取用户信息失败:', error);
+            throw error;
+          }
         },
-        deleteDestinationData({ commit }, index) {
-          commit('deleteDestinationData', index);
+        async updateUserInfo({ commit }, payload) {
+          try {
+            const response = await axios.post('/api/users/update', payload);
+            commit('updateUserInfo', response.data);
+          } catch (error) {
+            console.error('更新用户信息失败:', error);
+          }
         },
-        addPost({ commit, state }, post) {
-          const postWithUsername = {
-            ...post,
-            username: state.auth.username,
-            avatar: state.auth.avatar
-          };
-          commit('addPost', postWithUsername);
+        async loadDestinationData({ commit }) {
+          try {
+            const response = await axios.get('/api/destinations');
+            commit('setDestinationData', response.data);
+          } catch (error) {
+            console.error('加载目的地数据失败:', error);
+          }
         },
-        loadPosts({ commit }) {
-          commit('loadPosts');
+        async addDestinationData({ commit }, payload) {
+          try {
+            const response = await axios.post('/api/destinations', payload);
+            commit('addDestinationData', response.data);
+          } catch (error) {
+            console.error('添加目的地数据失败:', error);
+          }
         },
-        addComment({ commit, state }, comment) {
-          const commentWithUsername = {
-            ...comment,
-            username: state.auth.username,
-            avatar: state.auth.avatar
-          };
-          commit('addComment', commentWithUsername);
+        async editDestinationData({ commit }, { index, data }) {
+          try {
+            const response = await axios.put(`/api/destinations/${data.id}`, data);
+            commit('editDestinationData', { index, data: response.data });
+          } catch (error) {
+            console.error('编辑目的地数据失败:', error);
+          }
         },
-        loadComments({ commit }) {
-          commit('loadComments');
+        async deleteDestinationData({ commit }, id) {
+          try {
+            await axios.delete(`/api/destinations/${id}`);
+            commit('deleteDestinationData', id);
+          } catch (error) {
+            console.error('删除目的地数据失败:', error);
+          }
+        },
+        async loadPosts({ commit }) {
+          try {
+            const response = await axios.get('/api/posts');
+            commit('setPosts', response.data);
+          } catch (error) {
+            console.error('加载帖子数据失败:', error);
+          }
+        },
+        async addPost({ commit }, post) {
+          try {
+            const response = await axios.post('/api/posts', post);
+            commit('addPost', response.data);
+          } catch (error) {
+            console.error('添加帖子失败:', error);
+          }
+        },
+        async loadComments({ commit }, postId) {
+          try {
+            const response = await axios.get(`/api/comments/${postId}`);
+            commit('setComments', response.data);
+          } catch (error) {
+            console.error('加载评论数据失败:', error);
+          }
+        },
+        async addComment({ commit }, comment) {
+          try {
+            const response = await axios.post('/api/comments', comment);
+            commit('addComment', response.data);
+          } catch (error) {
+            console.error('添加评论失败:', error);
+          }
         }
       },
       getters: {
@@ -148,6 +198,9 @@ const store = createStore({
         getPosts: (state) => state.posts,
         getComments: (state) => (postId) => {
           return state.comments.filter(comment => comment.postId === postId);
+        },
+        getCurrentUser: (state) => {
+          return state.auth;
         },
         getUserDestinations: (state) => (username) => {
           const destinations = state.destinationData

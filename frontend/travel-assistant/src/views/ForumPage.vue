@@ -34,10 +34,17 @@ export default {
     ...mapActions('visitor', ['addPost', 'loadPosts']),
     handleCloseModal() {
       this.showModal = false;
+    },
+    addPost(newPost) {
+      this.addPost(newPost).then(() => {
+        this.showModal = false;
+      }).catch(error => {
+        console.error('添加帖子失败:', error);
+      });
     }
   },
   created() {
-    this.loadPosts(); // 在组件创建时加载帖子
+    this.loadPosts();
   }
 };
 </script>

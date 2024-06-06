@@ -2,7 +2,7 @@
   <div class="new-post-modal">
     <div class="modal-content">
       <h3>发新帖</h3>
-      <input v-model="title" placeholder="请输入标题" class="title-input"/>
+      <input v-model="title" placeholder="请输入标题" class="title-input" />
       <textarea v-model="content" placeholder="请输入内容" class="content-textarea"></textarea>
 
       <div class="image-upload">
@@ -50,7 +50,7 @@ export default {
     submitPost() {
       if (this.title && this.content) {
         const newPost = {
-          id: Date.now(), // 使用时间戳作为唯一 ID
+          id: Date.now(),
           title: this.title,
           content: this.content,
           images: this.uploadedImages.map(image => image.url)
