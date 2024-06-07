@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+
 export default {
   name: "NewPostModal",
   data() {
@@ -33,13 +35,17 @@ export default {
       uploadedImages: []
     };
   },
+  computed: {
+    ...mapState('visitor', ['auth'])
+  },
   methods: {
+    ...mapActions('visitor', ['addPost']),
     handleImageUpload(event) {
       const files = event.target.files;
       for (let i = 0; i < files.length; i++) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.uploadedImages.push({ url: e.target.result });
+          this.uploadedImages.push({ file: files[i], url: e.target.result });
         };
         reader.readAsDataURL(files[i]);
       }
@@ -49,15 +55,22 @@ export default {
     },
     submitPost() {
       if (this.title && this.content) {
-        const newPost = {
-          id: Date.now(),
-          title: this.title,
-          content: this.content,
-          images: this.uploadedImages.map(image => image.url)
-        };
-        this.$emit('submitPost', newPost);
-        this.resetForm();
-        this.$emit('closeModal');
+        const formData = new FormData();
+        formData.append('title', this.title);
+        formData.append('content', this.content);
+        formData.append('username', this.auth.username); // 使用当前登录用户的用户名
+        this.uploadedImages.forEach(image => {
+          formData.append('images', image.file);
+        });
+
+        this.addPost(formData).then(response => {
+          console.log('帖子上传成功:', response);
+          this.$emit('submitPost', response.data);
+          this.resetForm();
+          this.$emit('closeModal');
+        }).catch(error => {
+          console.error('帖子上传失败:', error);
+        });
       }
     },
     closeModal() {
@@ -72,6 +85,9 @@ export default {
   }
 };
 </script>
+
+
+
 
 <style scoped>
 .new-post-modal {

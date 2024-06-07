@@ -93,7 +93,7 @@ export default {
               response = await api.login(this.form);
               console.log("Login response:", response.data); // 添加日志
               this.$store.commit('visitor/login', response.data);
-              await this.$store.dispatch('visitor/loadUser', response.data.username); // 注册成功后加载当前用户数据
+              // await this.$store.dispatch('visitor/loadUser', response.data.username); // 注册成功后加载当前用户数据
               ElMessage.success('登录成功');
               this.$router.push({ name: 'UserProfile', params: { username: response.data.username } }); // 跳转到用户主页
             } else {

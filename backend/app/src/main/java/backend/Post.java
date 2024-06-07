@@ -1,17 +1,6 @@
 package backend;
 
-/**
- * @author : hyb
- * @date ：2024-06-05 - 23:36
- * @desc :
- */
-
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
@@ -23,8 +12,10 @@ public class Post {
     private String username;
     private String title;
     private String content;
-    @ElementCollection
-    private List<String> images;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private List<PostImage> images;
 
     // Getters and Setters
 
@@ -60,12 +51,11 @@ public class Post {
         this.content = content;
     }
 
-    public List<String> getImages() {
+    public List<PostImage> getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(List<PostImage> images) {
         this.images = images;
     }
-    // ...
 }

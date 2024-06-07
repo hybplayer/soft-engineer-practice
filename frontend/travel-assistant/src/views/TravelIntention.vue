@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { ElMessage } from 'element-plus';
 
 export default {
@@ -74,25 +74,30 @@ export default {
       remark: ''
     };
   },
+  computed: {
+    ...mapState('visitor', ['auth']) // 确保 auth 被正确映射
+  },
   methods: {
-    ...mapActions('visitor', ['addDestinationData']), // 使用 Vuex Action 更新目的地数据
+    ...mapActions('visitor', ['addDestinationData', 'refreshAuthProfile']),
     handleSubmit() {
       if (!this.departure || !this.destination || !this.departureDate || this.checkboxValues.length === 0 || !this.priceRange || !this.companionRequirements || !this.remark) {
         ElMessage.error('提交失败，请填写完整表格');
         return;
       }
 
-      this.addDestinationData({ // 更新目的地数据
+      this.addDestinationData({
         departure: this.departure,
         destination: this.destination,
         departureDate: this.departureDate,
         checkboxValues: this.checkboxValues,
         priceRange: this.priceRange,
         companionRequirements: this.companionRequirements,
-        remark: this.remark
+        remark: this.remark,
+        username: this.auth.username // 确保包含用户名
       }).then(() => {
         ElMessage.success('提交成功');
         this.clearForm();
+        this.refreshAuthProfile(); // 提交成功后刷新用户信息
       }).catch((error) => {
         ElMessage.error('提交失败');
         console.error(error);

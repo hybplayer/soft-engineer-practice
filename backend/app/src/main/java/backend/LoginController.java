@@ -1,18 +1,23 @@
 package backend;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class AuthController {
+public class LoginController {
 
-    private Map<String, String> users = new HashMap<>(){
+    private Map<String, String> users = new HashMap<>() {
         {
             put("admin", "123456");
+            put("usr1", "123456");
+            put("usr2", "123456");
         }
     };
 

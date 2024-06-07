@@ -19,9 +19,17 @@ const api = {
         return axios.post(`${API_BASE_URL}/register`, user);
     },
 
-    // 获取所有用户
-    getUsers() {
-        return axios.get(`${API_BASE_URL}/users`);
+    getUser(username) {
+        return axios.get(`${API_BASE_URL}/users/${username}`);
+    },
+
+    getAllUsers() {
+        return axios.get(`${API_BASE_URL}/allusers`);
+    },
+
+    getUserDestinationData(username) {
+        return axios.get(`${API_BASE_URL}/${username}/destinations`) // 返回Promise
+        // return axios.get(`/api/users/${username}/destinations`) // 返回Promise
     },
 
     // 更新用户信息
@@ -56,12 +64,20 @@ const api = {
 
     // 添加帖子
     addPost(post) {
-        return axios.post(`${API_BASE_URL}/posts`, post);
+        return axios.post(`${API_BASE_URL}/posts`, post, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     },
 
     // 获取某个帖子的所有评论
     getComments(postId) {
         return axios.get(`${API_BASE_URL}/comments/${postId}`);
+    },
+
+    loadAllComments() {
+        return axios.get(`${API_BASE_URL}/allcomments`);
     },
 
     // 添加评论

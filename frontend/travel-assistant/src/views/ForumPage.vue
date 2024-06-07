@@ -4,7 +4,7 @@
       <h2>论坛 | 分享 结伴 找攻略</h2>
       <el-button @click="showModal = true" type="primary">发新帖</el-button>
     </div>
-    <NewPostModal v-if="showModal" @closeModal="handleCloseModal" @submitPost="addPost" />
+    <NewPostModal v-if="showModal" @closeModal="handleCloseModal" @submitPost="submitPost" />
     <div class="forum-posts">
       <PostPage v-for="post in posts" :key="post.id" :post="post" />
     </div>
@@ -31,18 +31,12 @@ export default {
     ...mapState('visitor', ['auth', 'posts'])
   },
   methods: {
-    ...mapActions('visitor', ['addPost', 'loadPosts']),
+    ...mapActions('visitor', ['loadPosts']),
     handleCloseModal() {
       this.showModal = false;
-    },
-    addPost(newPost) {
-      this.addPost(newPost).then(() => {
-        this.showModal = false;
-      }).catch(error => {
-        console.error('添加帖子失败:', error);
-      });
     }
   },
+
   created() {
     this.loadPosts();
   }

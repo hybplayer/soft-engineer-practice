@@ -2,6 +2,8 @@ server:
   port: 20334
 
 spring:
+  mvc:
+    static-path-pattern=/uploads/**:
   datasource:
     url: jdbc:postgresql://eth.jht213.com:25432/lv_friends
     username: lv_admin

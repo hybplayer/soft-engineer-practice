@@ -1,11 +1,13 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
+import api from '@/api';
 
 const store = createStore({
   modules: {
     visitor: {
       namespaced: true,
       state: {
+        // 登录用户
         auth: {
           isAuthenticated: false,
           username: '',
@@ -13,6 +15,7 @@ const store = createStore({
           password: '',
           hobby: ''
         },
+        // 当前资料卡的用户
         currentProfile: {
           username: '',
           hobby: '',
@@ -48,14 +51,18 @@ const store = createStore({
           state.auth.password = payload.newPassword || state.auth.password;
           state.auth.hobby = payload.hobby || state.auth.hobby;
         },
+        getUserDestinations: state => username => state.userDestinations[username],
         setDestinationData(state, data) {
           state.destinationData = data;
         },
         addDestinationData(state, destination) {
           state.destinationData.push(destination);
         },
-        editDestinationData(state, { index, data }) {
-          state.destinationData.splice(index, 1, data);
+        editDestinationData(state, { id, data }) {
+          const index = state.destinationData.findIndex(dest => dest.id === id);
+          if (index !== -1) {
+            state.destinationData.splice(index, 1, data);
+          }
         },
         deleteDestinationData(state, id) {
           const index = state.destinationData.findIndex(dest => dest.id === id);
@@ -68,6 +75,33 @@ const store = createStore({
           state.currentProfile.hobby = profile.hobby;
           state.currentProfile.avatar = profile.avatar;
           state.currentProfile.password = profile.password;
+          // console.log(state.currentProfile.username, state.currentProfile.hobby);
+        },
+        setPosts(state, posts) {
+          state.posts = posts;
+        },
+        addPost(state, post) {
+          state.posts.push(post);
+        },
+        setComments(state, { postId, comments }) {
+          // 将 comments 的 postId 添加到现有的评论状态中
+          state.comments = state.comments.filter(comment => comment.postId !== postId).concat(comments);
+        },
+        addComment(state, comment) {
+          state.comments.push(comment);
+        },
+        // setAllComments(state, comments) {
+        //   // 你的设置所有帖子的评论的逻辑
+        //   state.allComments = comments;
+        // },
+        setUsers(state, users) {
+          state.users = users;
+        },
+        setUserDestinations(state, { username, destinations }) {
+          state.userDestinations = {
+            ...state.userDestinations,
+            [username]: destinations
+          };
         }
       },
       actions: {
@@ -92,16 +126,17 @@ const store = createStore({
         async loadUser({ commit }, username) {
           try {
             console.log(`Fetching user profile for: ${username}`);
-            const response = await axios.get(`/api/users/${username}`);
+            const response = await api.getUser(username);
             commit('loadUser', response.data);
           } catch (error) {
             console.error('加载用户数据失败:', error);
           }
         },
-        async fetchCurrentUser({ state, commit }) {
+        async fetchAuthUserProfile({ state, commit }) {
           try {
-            const response = await axios.get(`/api/users/${state.auth.username}`); // 根据当前用户名动态获取用户数据
-            commit('login', response.data);
+            console.log("state.auth.username:", state.auth.username);
+            const response = await api.getUser(state.auth.username); // 根据当前用户名动态获取用户数据
+            commit('setCurrentProfile', response.data);
           } catch (error) {
             console.error('获取当前用户数据失败:', error);
           }
@@ -109,7 +144,8 @@ const store = createStore({
         async fetchUserProfile({ commit }, username) {
           try {
             console.log(`Fetching user profile for: ${username}`); // 打印URL调试
-            const response = await axios.get(`/api/users/${username}`);
+            const response = await api.getUser(username);
+            console.log(response);
             commit('setCurrentProfile', response.data);
             return response.data;
           } catch (error) {
@@ -125,41 +161,64 @@ const store = createStore({
             console.error('更新用户信息失败:', error);
           }
         },
-        async loadDestinationData({ commit }) {
+        async loadDestinationData({ commit, state }) {
           try {
-            const response = await axios.get('/api/destinations');
-            commit('setDestinationData', response.data);
+            const response = await api.getDestinationData();
+            console.log("API Response Data:", response.data); // 打印API返回的数据
+
+            const filteredData = response.data.filter(destination => destination.username === state.currentProfile.username);
+            console.log("state.currentProfile.username: ", state.currentProfile.username);
+            console.log("Filtered Data: ", filteredData);
+
+            commit('setDestinationData', filteredData);
           } catch (error) {
             console.error('加载目的地数据失败:', error);
           }
         },
-        async addDestinationData({ commit }, payload) {
+        async loadUserDestinationData({ commit }, username) {
           try {
-            const response = await axios.post('/api/destinations', payload);
+            const response = await api.getDestinationData();
+            console.log("API Response Data:", response.data); // 打印API返回的数据
+
+            const filteredData = response.data.filter(destination => destination.username === username);
+            console.log("Filtered Data: ", filteredData);
+
+            commit('setDestinationData', filteredData);
+          } catch (error) {
+            console.error('加载目的地数据失败:', error);
+          }
+        },
+
+        async addDestinationData({ commit, dispatch }, payload) {
+          try {
+            const response = await api.addDestinationData(payload);
             commit('addDestinationData', response.data);
+            await dispatch('loadDestinationData'); // 更新数据后重新加载目的地数据
           } catch (error) {
             console.error('添加目的地数据失败:', error);
           }
         },
-        async editDestinationData({ commit }, { index, data }) {
+        async editDestinationData({ commit, dispatch }, { id, data }) {
           try {
-            const response = await axios.put(`/api/destinations/${data.id}`, data);
-            commit('editDestinationData', { index, data: response.data });
+            const response = await api.editDestinationData(id, data);
+            commit('editDestinationData', { id, data: response.data });
+            await dispatch('loadDestinationData'); // 更新数据后重新加载目的地数据
           } catch (error) {
             console.error('编辑目的地数据失败:', error);
           }
         },
-        async deleteDestinationData({ commit }, id) {
+        async deleteDestinationData({ commit, dispatch }, id) {
           try {
-            await axios.delete(`/api/destinations/${id}`);
+            await api.deleteDestinationData(id);
             commit('deleteDestinationData', id);
+            await dispatch('loadDestinationData'); // 更新数据后重新加载目的地数据
           } catch (error) {
             console.error('删除目的地数据失败:', error);
           }
         },
         async loadPosts({ commit }) {
           try {
-            const response = await axios.get('/api/posts');
+            const response = await api.getPosts();
             commit('setPosts', response.data);
           } catch (error) {
             console.error('加载帖子数据失败:', error);
@@ -167,34 +226,54 @@ const store = createStore({
         },
         async addPost({ commit }, post) {
           try {
-            const response = await axios.post('/api/posts', post);
+            const response = await api.addPost(post);
             commit('addPost', response.data);
+            return response.data;
           } catch (error) {
             console.error('添加帖子失败:', error);
+            throw error;
           }
         },
         async loadComments({ commit }, postId) {
-          try {
-            const response = await axios.get(`/api/comments/${postId}`);
-            commit('setComments', response.data);
-          } catch (error) {
-            console.error('加载评论数据失败:', error);
-          }
+          const response = await api.getComments(postId);
+          commit('setComments', { postId, comments: response.data });
         },
         async addComment({ commit }, comment) {
           try {
-            const response = await axios.post('/api/comments', comment);
+            const response = await api.addComment(comment);
             commit('addComment', response.data);
           } catch (error) {
             console.error('添加评论失败:', error);
           }
-        }
+        },
+        async refreshAuthProfile({ dispatch, state, commit }) {
+          await dispatch('fetchAuthUser');  // 获取当前登录用户信息
+          await dispatch('loadDestinationData');  // 加载当前用户的目的地数据
+          const username = state.auth.username;
+          const filteredDestinations = state.destinationData.filter(destination => destination.username === username);
+          console.log("Filtered Data after refreshAuthProfile: ", filteredDestinations);
+          commit('setDestinationData', filteredDestinations); // 设置筛选后的目的地数据
+        },
+        async fetchUsers({ commit }) {
+          return api.getAllUsers() // 返回Promise
+            .then(response => {
+              console.log("get all users: ", response);
+              commit('setUsers', response.data);
+            });
+        },
+        async fetchUserDestinations({ commit }, username) {
+          return api.getUserDestinationData(username)
+            .then(response => {
+              commit('setUserDestinations', { username, destinations: response.data });
+            });
+        },
       },
       getters: {
         getDestinationData: (state) => (username) => {
           return state.destinationData.filter(destination => destination.username === username);
         },
         getUsers: (state) => state.users,
+        // getUserDestinations: state => username => state.userDestinations[username],
         getPosts: (state) => state.posts,
         getComments: (state) => (postId) => {
           return state.comments.filter(comment => comment.postId === postId);

@@ -11,7 +11,8 @@
         <p>{{ post.content }}</p>
       </div>
       <div class="forum-imgs">
-        <img v-for="(image, index) in post.images" :key="index" :src="image" alt="Post Image" />
+        <img v-for="(image, index) in post.images" :key="index" :src="`data:image/jpeg;base64,${image.imageUrl}`"
+          alt="Post Image" />
       </div>
     </div>
 

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapActions } from 'vuex';
 
 export default {
   computed: {
@@ -29,6 +29,21 @@ export default {
           destinations: this.getUserDestinations(user.username) || '未指定'
         }));
     }
+  },
+
+  methods: {
+    ...mapActions('visitor', ['fetchUsers', 'fetchUserDestinations']),
+    loadUserData() {
+      this.fetchUsers().then(() => {
+        this.getUsers.forEach(user => {
+          this.fetchUserDestinations(user.username);
+        });
+      });
+    }
+  },
+
+  created() {
+    this.loadUserData();
   }
 };
 </script>

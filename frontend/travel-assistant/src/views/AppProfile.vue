@@ -45,8 +45,8 @@
 
     <!-- 显示用户信息 -->
     <div v-else>
-      <p><strong>昵称:</strong> {{ username }}</p>
-      <p><strong>旅游爱好:</strong> {{ hobby }}</p>
+      <p><strong>昵称:</strong> {{ currentProfile.username }}</p>
+      <p><strong>旅游爱好:</strong> {{ currentProfile.hobby }}</p>
     </div>
 
     <!-- 新增数据存放区域 -->
@@ -69,8 +69,9 @@
         <el-table-column prop="companionRequirements" label="对同伴的要求"></el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
         <el-table-column label="操作" v-if="isCurrentUser">
-          <template #default="{ $index }">
-            <el-button type="text" size="small" @click="deleteDestination($index)">删除</el-button>
+          <template #default="{ row, $index }">
+            <el-button type="text" size="small" @click="editDestination(row, $index)">编辑</el-button>
+            <el-button type="text" size="small" @click="deleteDestination(row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -123,15 +124,9 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { ElMessage } from 'element-plus';
-// import { Eye, EyeOff } from '@element-plus/icons-vue';
-// import CommentSection from '@/components/CommentSection.vue'; // 导入评论组件
 
 export default {
-  components: {
-    // CommentSection,
-    // Eye,
-    // EyeOff
-  },
+  name: "UserPage",
   props: {
     username: {
       type: String,
@@ -162,11 +157,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('visitor', ['auth']),
+    ...mapState('visitor', ['auth', 'currentProfile', 'destinationData']),
     ...mapGetters('visitor', ['getUsers']),
-    destinationData() {
-      return this.$store.getters['visitor/getDestinationData'](this.username);
-    },
     priceRangeMap() {
       return {
         1: '1000元以下',
@@ -180,7 +172,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('visitor', ['updateUserInfo', 'updateDestinationData', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile']),
+    ...mapActions('visitor', ['updateUserInfo', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile', 'loadUserDestinationData']),
     updateUsername() {
       if (this.newNickname) {
         const userExists = this.getUsers.some(user => user.username === this.newNickname);
@@ -191,6 +183,7 @@ export default {
         this.updateUserInfo({ newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
             ElMessage.success('昵称保存成功');
+            this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
           })
           .catch(error => {
             ElMessage.error('保存失败');
@@ -206,6 +199,7 @@ export default {
       this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
         .then(() => {
           ElMessage.success('密码保存成功');
+          this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
         })
         .catch(error => {
           ElMessage.error('保存失败');
@@ -217,57 +211,26 @@ export default {
         this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
             ElMessage.success('爱好保存成功');
+            this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
           })
           .catch(error => {
             ElMessage.error('保存失败');
             console.error('爱好保存失败:', error);
           });
       }
-    },
-    updateHobbyLength() {
-      this.hobbyLength = this.hobby.length;
-    },
-    togglePasswordVisibility() {
-      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
-    },
-    toggleConfirmPasswordVisibility() {
-      this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
-    },
-    editDestination(row, index) {
-      this.editForm = { ...row };
-      this.editIndex = index;
-      this.editDialogVisible = true;
-    },
-    saveEdit() {
-      if (this.editIndex !== -1) {
-        this.editDestinationData({ index: this.editIndex, data: this.editForm })
-          .then(() => {
-            ElMessage.success('目的地信息更新成功');
-            this.editDialogVisible = false;
-          })
-          .catch(error => {
-            ElMessage.error('更新失败');
-            console.error('目的地信息更新失败:', error);
-          });
-      }
-    },
-    deleteDestination(index) {
-      this.deleteDestinationData(index)
-        .then(() => {
-          ElMessage.success('目的地信息删除成功');
-        })
-        .catch(error => {
-          ElMessage.error('删除失败');
-          console.error('目的地信息删除失败:', error);
-        });
     }
   },
+
   async created() {
-    const userData = await this.$store.dispatch('visitor/fetchUserProfile', this.username);
-    this.newNickname = userData.username || '';
-    this.hobby = userData.hobby || '';
+    console.log("now username is: ", this.username);
+    await this.$store.dispatch('visitor/fetchUserProfile', this.username); // 获取对应用户的信息
+    await this.$store.dispatch('visitor/loadUserDestinationData', this.username); // 确保在页面加载时获取最新的数据
+    this.newNickname = this.currentProfile.username || '';
+    this.hobby = this.currentProfile.hobby || '';
     this.hobbyLength = this.hobby.length;
   }
+
+
 };
 </script>
 

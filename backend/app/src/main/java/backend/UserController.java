@@ -1,14 +1,15 @@
 package backend;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/api")
@@ -28,6 +29,24 @@ public class UserController {
         initialUser.setPassword("123456");
         initialUser.setHobby("Reading");
         userStorage.put(initialUser.getUsername(), initialUser);
+        User usr1 = new User();
+        usr1.setId(2L);
+        usr1.setUsername("usr1");
+        usr1.setPassword("123456");
+        usr1.setHobby("playing");
+        userStorage.put(usr1.getUsername(), usr1);
+        User usr2 = new User();
+        usr2.setId(3L);
+        usr2.setUsername("usr2");
+        usr2.setPassword("123456");
+        usr2.setHobby("looking");
+        userStorage.put(usr2.getUsername(), usr2);
+    }
+
+    @GetMapping("/allusers")
+    public ResponseEntity<List<User>> getAllUsers() {
+        // 返回所有用户
+        return ResponseEntity.ok(userStorage.values().stream().toList());
     }
 
     // 获取用户信息

@@ -24,10 +24,6 @@ export default {
     postId: {
       type: Number,
       required: true
-    },
-    currentUser: {
-      type: Object,
-      required: true
     }
   },
   data() {
@@ -43,18 +39,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions('visitor', ['addComment']),
-    submitComment() {
+    ...mapActions('visitor', ['loadComments', 'addComment']),
+    async submitComment() {
       if (this.newComment.trim()) {
         const newComment = {
-          id: Date.now(), // 使用时间戳作为唯一 ID
           postId: this.postId,
-          avatar: this.currentUser.avatar || require("../assets/user-default.jpg"),
-          username: this.currentUser.username, // 使用当前登录用户的用户名
+          avatar: this.auth.avatar || require("../assets/user-default.jpg"),
+          username: this.auth.username,
           content: this.newComment.trim()
         };
-        this.addComment(newComment);
+        await this.addComment(newComment);
         this.newComment = "";
+        this.loadComments(this.postId); // 重新加载评论
       }
     },
     viewProfile(username) {
@@ -62,7 +58,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('visitor/loadComments'); // 在组件创建时加载评论
+    this.loadComments(this.postId); // 在组件创建时加载评论
   }
 };
 </script>
@@ -93,7 +89,6 @@ export default {
 .comment-username {
   font-weight: bold;
   cursor: pointer;
-  /* 增加指针样式以表明可点击 */
 }
 
 .add-comment {
