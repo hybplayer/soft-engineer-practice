@@ -157,7 +157,10 @@ const store = createStore({
         },
         async updateUserInfo({ commit }, payload) {
           try {
-            const response = await axios.post('/api/users/update', payload);
+            console.log("updateUserInfo:", payload);
+            // const response = await axios.post('/api/users/update', payload);
+            const response = await api.updateUserInfo(payload);
+            console.log("API Response Data:", response.data);
             commit('updateUserInfo', response.data);
           } catch (error) {
             console.error('更新用户信息失败:', error);

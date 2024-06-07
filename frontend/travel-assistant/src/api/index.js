@@ -34,7 +34,7 @@ const api = {
 
     // 更新用户信息
     updateUserInfo(payload) {
-        return axios.put(`${API_BASE_URL}/users/update`, payload);
+        return axios.post(`${API_BASE_URL}/users/update`, payload);
     },
 
     // 获取所有目的地数据

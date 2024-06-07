@@ -180,7 +180,7 @@ export default {
           ElMessage.error('用户名已存在');
           return;
         }
-        this.updateUserInfo({ newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby })
+        this.updateUserInfo({ username: this.auth.username, newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
             ElMessage.success('昵称保存成功');
             this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
@@ -196,7 +196,7 @@ export default {
         ElMessage.error('新密码和确认新密码不一致');
         return;
       }
-      this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
+      this.updateUserInfo({ username: this.auth.username,  newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
         .then(() => {
           ElMessage.success('密码保存成功');
           this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
@@ -208,7 +208,7 @@ export default {
     },
     updateHobby() {
       if (this.hobby) {
-        this.updateUserInfo({ newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby })
+        this.updateUserInfo({ username: this.auth.username, newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
             ElMessage.success('爱好保存成功');
             this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
