@@ -25,7 +25,9 @@ const store = createStore({
         users: [],
         destinationData: [],
         posts: [],
-        comments: []
+        comments: [],
+        userDestinations: {} // 存储每个用户的目的地
+
       },
       mutations: {
         login(state, user) {
@@ -255,24 +257,35 @@ const store = createStore({
           commit('setDestinationData', filteredDestinations); // 设置筛选后的目的地数据
         },
         async fetchUsers({ commit }) {
-          return api.getAllUsers() // 返回Promise
-            .then(response => {
-              console.log("get all users: ", response);
-              commit('setUsers', response.data);
-            });
+          try {
+            const response = await api.getAllUsers(); // 使用API获取所有用户数据
+            commit('setUsers', response.data);
+          } catch (error) {
+            console.error("获取用户数据失败:", error);
+          }
         },
         async fetchUserDestinations({ commit }, username) {
-          return api.getUserDestinationData(username)
-            .then(response => {
-              commit('setUserDestinations', { username, destinations: response.data });
-            });
+          try {
+            const response = await api.getUserDestinationData(username);
+            console.log(`目的地数据 (${username}):`, response.data); // 调试信息
+            const destinations = response.data.map(dest => dest.destination); // 假设 response.data 是目的地数组
+            commit('setUserDestinations', { username, destinations });
+          } catch (error) {
+            console.error(`加载用户 ${username} 的目的地数据失败:`, error);
+          }
         },
+        async fetchAllUserDestinations({ state, dispatch }) {
+          await Promise.all(state.users.map(user => dispatch('fetchUserDestinations', user.username)));
+        }
       },
       getters: {
         getDestinationData: (state) => (username) => {
           return state.destinationData.filter(destination => destination.username === username);
         },
         getUsers: (state) => state.users,
+        getUserDestinations: (state) => (username) => {
+          return state.userDestinations[username] || [];
+        },
         // getUserDestinations: state => username => state.userDestinations[username],
         getPosts: (state) => state.posts,
         getComments: (state) => (postId) => {
@@ -281,12 +294,12 @@ const store = createStore({
         getCurrentUser: (state) => {
           return state.auth;
         },
-        getUserDestinations: (state) => (username) => {
-          const destinations = state.destinationData
-            .filter(destination => destination.username === username)
-            .map(destination => destination.destination);
-          return destinations.join(', ');
-        }
+        // getUserDestinations: (state) => (username) => {
+        //   const destinations = state.destinationData
+        //     .filter(destination => destination.username === username)
+        //     .map(destination => destination.destination);
+        //   return destinations; // 保持目的地为数组格式
+        // }
       }
     }
   }

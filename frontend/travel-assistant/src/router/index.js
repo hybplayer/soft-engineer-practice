@@ -7,6 +7,7 @@ import LoginRegister from '../components/LoginRegister.vue';
 import TeamFormation from '../components/TeamFormation.vue';
 import RoutePlanning from '../components/RoutePlanning.vue';
 import ForumPage from '../views/ForumPage.vue';
+import LargeModel from '../views/LargeModel.vue'; // 导入新的页面组件
 import store from '../store';  // 导入 store
 
 const routes = [
@@ -18,6 +19,7 @@ const routes = [
   { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning', meta: { showFooter: false } },
   { path: '/forumpage', component: ForumPage, name: 'ForumPage', meta: { showFooter: true } },
   { path: '/user/:username', component: Profile, name: 'UserProfile', props: true, meta: { showFooter: false } },
+  { path: '/large-model', component: LargeModel, name: 'LargeModel', meta: { showFooter: true } }, // 新增路由配置
   { path: '/:catchAll(.*)', component: NotFound, name: 'NotFound', meta: { showFooter: false } }
 ];
 

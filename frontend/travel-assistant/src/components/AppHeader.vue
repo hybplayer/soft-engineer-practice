@@ -10,6 +10,8 @@
       <router-link :class="{ 'active': $route.path === '/forumpage' }" class="nav-link" to="/forumpage">论坛</router-link>
       <router-link :class="{ 'active': $route.path === '/route-planning' }" class="nav-link"
         to="/route-planning">地图</router-link>
+      <router-link :class="{ 'active': $route.path === '/large-model' }" class="nav-link"
+        to="/large-model">大模型</router-link> <!-- 新增链接 -->
       <router-link v-if="!isAuthenticated" class="nav-link" to="/login">登录/注册</router-link>
       <button v-if="isAuthenticated" @click="logout" class="logout-btn">退出登录</button>
     </nav>

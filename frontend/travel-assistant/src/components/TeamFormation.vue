@@ -8,7 +8,15 @@
         </template>
       </el-table-column>
       <el-table-column prop="hobby" label="旅游爱好"></el-table-column>
-      <el-table-column prop="destinations" label="目的地"></el-table-column>
+      <el-table-column prop="destinations" label="目的地">
+        <template #default="{ row }">
+          <span v-if="row.destinations.length">
+            <span v-for="(destination, index) in row.destinations" :key="index">{{ destination }}<span
+                v-if="index < row.destinations.length - 1">, </span></span>
+          </span>
+          <span v-else>未指定</span>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -21,29 +29,28 @@ export default {
     ...mapState('visitor', ['auth']),
     ...mapGetters('visitor', ['getUsers', 'getUserDestinations']),
     userList() {
-      return this.getUsers
+      const users = this.getUsers
         .filter(user => user.username !== this.auth.username) // 排除当前用户
         .map(user => ({
           username: user.username,
           hobby: user.hobby,
-          destinations: this.getUserDestinations(user.username) || '未指定'
+          destinations: this.getUserDestinations(user.username) // 获取并返回目的地数组
         }));
+      console.log("用户列表:", users); // 调试信息
+      return users;
     }
   },
 
   methods: {
-    ...mapActions('visitor', ['fetchUsers', 'fetchUserDestinations']),
-    loadUserData() {
-      this.fetchUsers().then(() => {
-        this.getUsers.forEach(user => {
-          this.fetchUserDestinations(user.username);
-        });
-      });
+    ...mapActions('visitor', ['fetchUsers', 'fetchAllUserDestinations']),
+    async loadUserData() {
+      await this.fetchUsers();
+      await this.fetchAllUserDestinations();
     }
   },
 
-  created() {
-    this.loadUserData();
+  async created() {
+    await this.loadUserData(); // 确保在created钩子中等待所有数据加载完成
   }
 };
 </script>
