@@ -183,7 +183,8 @@ export default {
         this.updateUserInfo({ username: this.auth.username, newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
             ElMessage.success('昵称保存成功');
-            this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
+            this.auth.username = this.newNickname;
+            this.fetchUserProfile(this.auth.username); // 修改成功后刷新用户信息
           })
           .catch(error => {
             ElMessage.error('保存失败');

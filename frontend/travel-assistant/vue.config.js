@@ -12,5 +12,10 @@ module.exports = defineConfig({
         }
       }
     },
+    allowedHosts: [
+      'localhost',
+      'www.qyer.com',
+      'eth.jht213.com',
+    ]
   }
 })
