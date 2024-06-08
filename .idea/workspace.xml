@@ -5,53 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01419e67-2308-4dd2-8140-06a7d7318e2c" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/8.0.2/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/8.0.2/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/8.0.2/dependencies-accessors/dependencies-accessors.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/8.0.2/dependencies-accessors/dependencies-accessors.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/8.0.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/8.0.2/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/8.0.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/8.0.2/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/8.0.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/8.0.2/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/8.0.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/8.0.2/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/8.0.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/8.0.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/bin/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/bin/main/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/bin/main/backend/AuthController$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/bin/main/backend/AuthController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/bin/main/backend/Post.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/bin/main/backend/Post.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/bin/main/backend/PostController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/bin/main/backend/PostController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/bin/main/backend/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/bin/main/backend/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/AuthController$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/AuthController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/Post.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/Post.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/PostController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/PostController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/build/classes/java/main/backend/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/build/resources/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/build/resources/main/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/Comment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/CommentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/CommentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/CommentRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/DestinationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/DestinationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/DestinationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/DestinationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/Post.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/PostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/PostImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/PostImage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/ResourceNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/ResourceNotFoundException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/java/backend/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/java/backend/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/api/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/api/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/components/CommentSection.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/components/CommentSection.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/components/LoginRegister.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/components/LoginRegister.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/components/NewPostModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/components/NewPostModal.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/components/PostPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/components/PostPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/components/TeamFormation.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/components/TeamFormation.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/store/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/views/AppProfile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/views/AppProfile.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/views/ForumPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/views/ForumPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/travel-assistant/src/views/TravelIntention.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/travel-assistant/src/views/TravelIntention.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,24 +69,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Gradle.D:/学校/课件/软件工程/lab/practice/backend/app [:app:App.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend [wrapper].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/学校/课件/软件工程/lab/practice&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDK&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;,
-    &quot;应用程序.Run Appbackend.App.executor&quot;: &quot;Run&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Gradle.D:/学校/课件/软件工程/lab/practice/backend/app [:app:App.main()].executor": "Run",
+    "Gradle.backend [wrapper].executor": "Run",
+    "Gradle.backend.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/学校/课件/软件工程/lab/soft-exp-backend",
+    "project.structure.last.edited": "SDK",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "File.Encoding",
+    "应用程序.Run Appbackend.App.executor": "Run"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="backend" />

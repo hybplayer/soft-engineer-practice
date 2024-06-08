@@ -1,7 +1,7 @@
 import axios from 'axios';
 import base from './base'
 
-const API_BASE_URL = 'http://eth.jht213.com:20334/api';
+const API_BASE_URL = 'http://localhost:20334/api';
 
 const api = {
     // 推荐

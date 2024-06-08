@@ -184,7 +184,9 @@ export default {
           .then(() => {
             ElMessage.success('昵称保存成功');
             this.auth.username = this.newNickname;
-            this.fetchUserProfile(this.auth.username); // 修改成功后刷新用户信息
+            this.fetchUserProfile(this.auth.username).then(() => {
+              this.$router.push(`/user/${this.newNickname}`); // 修改成功后刷新用户信息并更新URL
+            });
           })
           .catch(error => {
             ElMessage.error('保存失败');
@@ -197,7 +199,7 @@ export default {
         ElMessage.error('新密码和确认新密码不一致');
         return;
       }
-      this.updateUserInfo({ username: this.auth.username,  newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
+      this.updateUserInfo({ username: this.auth.username, newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
         .then(() => {
           ElMessage.success('密码保存成功');
           this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
@@ -219,6 +221,33 @@ export default {
             console.error('爱好保存失败:', error);
           });
       }
+    },
+    deleteDestination(id) {
+      this.deleteDestinationData(id)
+        .then(() => {
+          ElMessage.success('删除成功');
+        })
+        .catch(error => {
+          ElMessage.error('删除失败');
+          console.error('删除目的地失败:', error);
+        });
+    },
+    editDestination(row, index) {
+      this.editIndex = index;
+      this.editForm = { ...row };
+      this.editDialogVisible = true;
+    },
+    saveEdit() {
+      const { id, ...data } = this.editForm;
+      this.editDestinationData({ id, data })
+        .then(() => {
+          ElMessage.success('编辑成功');
+          this.editDialogVisible = false;
+        })
+        .catch(error => {
+          ElMessage.error('编辑失败');
+          console.error('编辑目的地失败:', error);
+        });
     }
   },
 
