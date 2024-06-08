@@ -74,11 +74,12 @@
             <el-button type="text" size="small" @click="deleteDestination(row.id)">删除</el-button>
           </template>
         </el-table-column>
+
       </el-table>
     </div>
 
     <!-- 编辑目的地表单 -->
-    <el-dialog v-model:visible="editDialogVisible" title="编辑目的地" class="edit-dialog">
+    <el-dialog v-model="editDialogVisible" title="编辑目的地" width="600px" class="edit-dialog">
       <el-form :model="editForm" class="edit-form">
         <el-form-item label="出发地">
           <el-input v-model="editForm.departure"></el-input>
@@ -113,12 +114,13 @@
           <el-input type="textarea" v-model="editForm.remark"></el-input>
         </el-form-item>
       </el-form>
-      <template #footer>
+      <template v-slot:footer>
         <el-button @click="editDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="saveEdit">保存</el-button>
       </template>
     </el-dialog>
   </div>
+
 </template>
 
 <script>
@@ -144,6 +146,7 @@ export default {
       confirmPasswordFieldType: 'password',
       editDialogVisible: false,
       editForm: {
+        id: null,
         departure: '',
         destination: '',
         departureDate: '',
@@ -156,6 +159,7 @@ export default {
       postId: 1 // 示例帖子ID
     };
   },
+
   computed: {
     ...mapState('visitor', ['auth', 'currentProfile', 'destinationData']),
     ...mapGetters('visitor', ['getUsers']),
@@ -233,10 +237,12 @@ export default {
         });
     },
     editDestination(row, index) {
+      console.log('Editing destination:', row);
       this.editIndex = index;
       this.editForm = { ...row };
       this.editDialogVisible = true;
     },
+
     saveEdit() {
       const { id, ...data } = this.editForm;
       this.editDestinationData({ id, data })
@@ -316,7 +322,33 @@ export default {
   }
 }
 
+.el-dialog__body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.el-dialog__footer {
+  padding: 1px 2px;
+  background-color: #ff0000;
+  /* 确保背景颜色与对话框一致 */
+  border-top: 1px solid #e00808;
+  /* 添加顶部边框以区分内容和底部 */
+  display: flex;
+  justify-content: flex-end;
+  /* 确保按钮在右侧对齐 */
+}
+
+.el-button {
+  margin-left: 10px;
+}
+
+.el-dialog__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .edit-dialog {
-  width: 50%;
+  width: 600px;
 }
 </style>
