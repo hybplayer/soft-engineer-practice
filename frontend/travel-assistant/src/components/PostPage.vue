@@ -22,7 +22,7 @@
 
 <script>
 import CommentSection from "@/components/CommentSection.vue";
-import defaultAvatar from "../assets/B.jpg";
+import defaultAvatar from "../assets/user-default.png"; // 请确保有一个默认头像
 import { mapState } from 'vuex';
 
 export default {

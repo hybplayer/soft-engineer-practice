@@ -44,8 +44,8 @@ export default {
       if (this.newComment.trim()) {
         const newComment = {
           postId: this.postId,
-          avatar: this.auth.avatar || require("../assets/user-default.jpg"),
-          username: this.auth.username,
+          avatar: this.currentUser.avatar || require("../assets/user-default.png"),
+          username: this.currentUser.username, // 使用当前登录用户的用户名
           content: this.newComment.trim()
         };
         await this.addComment(newComment);
