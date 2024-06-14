@@ -6,7 +6,7 @@
     </div>
     <NewPostModal v-if="showModal" @closeModal="handleCloseModal" @submitPost="submitPost" />
     <div class="forum-posts">
-      <PostPage v-for="post in posts" :key="post.id" :post="post" />
+      <PostPage v-for="post in filteredPosts" :key="post.id" :post="post" />
     </div>
   </div>
 </template>
@@ -28,7 +28,14 @@ export default {
     };
   },
   computed: {
-    ...mapState('visitor', ['auth', 'posts'])
+    ...mapState('visitor', ['auth', 'posts']),
+    filteredPosts() {
+      const postId = this.$route.query.postId;
+      if (postId) {
+        return this.posts.filter(post => post.id === postId);
+      }
+      return this.posts;
+    }
   },
   methods: {
     ...mapActions('visitor', ['loadPosts']),

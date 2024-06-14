@@ -1,14 +1,8 @@
 import axios from 'axios';
-import base from './base'
 
 const API_BASE_URL = 'http://localhost:20334/api';
 
 const api = {
-    // 推荐
-    getTuijian() {
-        return axios.get(base.recommend);
-    },
-
     // 用户登录
     login(credentials) {
         return axios.post(`${API_BASE_URL}/login`, credentials);
@@ -36,7 +30,6 @@ const api = {
 
     getUserDestinationData(username) {
         return axios.get(`${API_BASE_URL}/${username}/destinations`) // 返回Promise
-        // return axios.get(`/api/users/${username}/destinations`) // 返回Promise
     },
 
     // 更新用户信息

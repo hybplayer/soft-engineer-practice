@@ -13,22 +13,20 @@
     <div class="section">
       <div class="title">今日推荐</div>
       <ul class="content">
-        <li v-for="(item, index) in arr" :key="index">
+        <li v-for="(post, index) in posts" :key="index">
           <div class="img">
-            <a href="##">
-              <img :class="{ animate: item.type !== 'video' }" :src="item.data.pic" referrerPolicy="no-referrer" alt="" />
-            </a>
+            <router-link :to="{ name: 'ForumPage', query: { postId: post.id } }">
+              <img :class="{ animate: true }" :src="post.image" referrerPolicy="no-referrer" alt="" />
+            </router-link>
           </div>
           <div class="info">
-            <a href="##" class="link">
-              <div class="desc">{{ item.data.subject }}</div>
+            <router-link :to="{ name: 'ForumPage', query: { postId: post.id } }" class="link">
+              <div class="desc">{{ post.title }}</div>
               <div class="bottom">
-                <strong>{{ item.data.username }}</strong>
-                <span v-if="item.data.views">{{ item.data.views }}预览过</span>
-                <span v-else-if="item.data.tag">{{ item.data.tag }}</span>
-                <span v-else v-html="item.data.price"></span>
+                <strong>{{ post.author }}</strong>
+                <span v-if="post.views">{{ post.views }} 预览过</span>
               </div>
-            </a>
+            </router-link>
           </div>
         </li>
       </ul>
@@ -37,10 +35,11 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
+
 export default {
   data() {
     return {
-      arr: [], // 推荐数据容器
       images: [
         require('../assets/banner-1.png'),
         require('../assets/banner-2.png'),
@@ -49,12 +48,14 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapState('visitor', ['posts'])
+  },
+  methods: {
+    ...mapActions('visitor', ['loadPosts'])
+  },
   created() {
-    // 获取今日推荐
-    this.$api.getTuijian().then((res) => {
-      console.log('今日推荐----', res.data);
-      this.arr = res.data.data;
-    });
+    this.loadPosts();
   }
 };
 </script>
@@ -74,6 +75,7 @@ export default {
 .section {
   width: 1160px;
   margin: 20px auto;
+
   .title {
     position: relative;
     height: 74px;
@@ -86,9 +88,12 @@ export default {
 .content {
   overflow: hidden;
   margin-right: -20px;
+
   li {
-    list-style-type: none; /* 消除小黑点 */
-    width: calc(25% - 20px); /* 让每行容纳四个对象 */
+    list-style-type: none;
+    /* 消除小黑点 */
+    width: calc(25% - 20px);
+    /* 让每行容纳四个对象 */
     height: 300px;
     float: left;
     box-sizing: border-box;
@@ -96,27 +101,34 @@ export default {
     margin-bottom: 20px;
     margin-right: 20px;
   }
+
   li:hover {
     box-shadow: 0 0 5px rgb(0 0 0 / 20%);
   }
+
   .img {
     width: 100%;
     height: 185px;
     overflow: hidden;
+
     img {
       width: 100%;
       height: 185px;
     }
+
     .animate {
       transition: all 1.5s;
     }
+
     .animate:hover {
       transform: scale(1.2);
     }
   }
+
   .info {
     padding-left: 10px;
     padding-right: 10px;
+
     .desc {
       margin-top: 14px;
       height: 44px;
@@ -124,6 +136,7 @@ export default {
       overflow: hidden;
       color: #333;
     }
+
     .bottom {
       font-size: 14px;
       margin-top: 16px;
@@ -132,8 +145,10 @@ export default {
       text-overflow: ellipsis;
       white-space: nowrap;
       color: #636363;
+
       span {
         float: right;
+
         /deep/ em {
           font-style: normal;
           color: red;
@@ -141,8 +156,10 @@ export default {
       }
     }
   }
+
   .link {
-    text-decoration: none; /* 移除下划线 */
+    text-decoration: none;
+    /* 移除下划线 */
     color: inherit;
   }
 }
