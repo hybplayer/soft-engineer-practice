@@ -121,6 +121,19 @@
     </el-dialog>
   </div>
 
+  <!-- 显示和管理邀请 -->
+  <div class="invitations" v-if="auth.invitations && auth.invitations.length">
+    <h3>邀请</h3>
+    <el-table :data="auth.invitations" style="width: 100%">
+      <el-table-column prop="from" label="来自"></el-table-column>
+      <el-table-column label="操作">
+        <template #default="{ row, $index }">
+          <el-button type="success" @click="acceptInvite(row, $index)">接受</el-button>
+          <el-button type="danger" @click="declineInvite(row, $index)">拒绝</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script>
@@ -156,7 +169,9 @@ export default {
         remark: ''
       },
       editIndex: -1,
-      postId: 1 // 示例帖子ID
+      postId: 1, // 示例帖子ID
+      invitations: [] // 初始化 invitations 数组
+
     };
   },
 
@@ -176,7 +191,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('visitor', ['updateUserInfo', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile', 'loadUserDestinationData']),
+    ...mapActions('visitor', ['updateUserInfo', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile', 'loadUserDestinationData', 'fetchInvitations', 'respondInvite']),
     updateUsername() {
       if (this.newNickname) {
         const userExists = this.getUsers.some(user => user.username === this.newNickname);
@@ -242,7 +257,6 @@ export default {
       this.editForm = { ...row };
       this.editDialogVisible = true;
     },
-
     saveEdit() {
       const { id, ...data } = this.editForm;
       this.editDestinationData({ id, data })
@@ -254,6 +268,24 @@ export default {
           ElMessage.error('编辑失败');
           console.error('编辑目的地失败:', error);
         });
+    },
+    async acceptInvite(invite, index) {
+      try {
+        await this.respondInvite({ id: invite.id, response: 'accept' });
+        this.auth.invitations.splice(index, 1); // 从邀请列表中移除已接受的邀请
+        ElMessage.success('已接受邀请');
+      } catch (error) {
+        ElMessage.error('接受邀请失败');
+      }
+    },
+    async declineInvite(invite, index) {
+      try {
+        await this.respondInvite({ id: invite.id, response: 'decline' });
+        this.auth.invitations.splice(index, 1); // 从邀请列表中移除已拒绝的邀请
+        ElMessage.success('已拒绝邀请');
+      } catch (error) {
+        ElMessage.error('拒绝邀请失败');
+      }
     }
   },
 
@@ -261,6 +293,10 @@ export default {
     console.log("now username is: ", this.username);
     await this.$store.dispatch('visitor/fetchUserProfile', this.username); // 获取对应用户的信息
     await this.$store.dispatch('visitor/loadUserDestinationData', this.username); // 确保在页面加载时获取最新的数据
+    if (this.isCurrentUser) {
+      await this.fetchInvitations(); // 如果是当前用户，加载邀请信息
+    }
+
     this.newNickname = this.currentProfile.username || '';
     this.hobby = this.currentProfile.hobby || '';
     this.hobbyLength = this.hobby.length;

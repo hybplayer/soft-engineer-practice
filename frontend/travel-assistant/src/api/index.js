@@ -20,7 +20,14 @@ const api = {
     },
 
     getUser(username) {
-        return axios.get(`${API_BASE_URL}/users/${username}`);
+        const response = axios.get(`${API_BASE_URL}/users/${username}`);
+        const data = response.data;
+
+        // 确保返回的数据包含 user 和 invitations 属性
+        return {
+            user: data.user || data,  // 适应不同的数据结构
+            invitations: data.invitations || []
+        };
     },
 
     getAllUsers() {
@@ -83,6 +90,19 @@ const api = {
     // 添加评论
     addComment(comment) {
         return axios.post(`${API_BASE_URL}/comments`, comment);
+    },
+
+    sendInvite(invite) {
+        return axios.post(`${API_BASE_URL}/invite`, invite);
+    },
+
+    respondInvite(id, response) {
+        return axios.post(`${API_BASE_URL}/invite/${id}/respond`, { response });
+    },
+
+    // 获取邀请
+    getInvitations() {
+        return axios.get(`${API_BASE_URL}/invitations`);
     }
 };
 

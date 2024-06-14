@@ -13,7 +13,8 @@ const store = createStore({
           username: '',
           avatar: '',
           password: '',
-          hobby: ''
+          hobby: '',
+          invitations: []
         },
         // 当前资料卡的用户
         currentProfile: {
@@ -27,7 +28,6 @@ const store = createStore({
         posts: [],
         comments: [],
         userDestinations: {} // 存储每个用户的目的地
-
       },
       mutations: {
         login(state, user) {
@@ -104,13 +104,20 @@ const store = createStore({
             ...state.userDestinations,
             [username]: destinations
           };
+        },
+        setInvitations(state, invitations) {
+          state.auth.invitations = invitations;
         }
       },
       actions: {
-        async login({ commit }, credentials) {
+        async login({ commit, dispatch }, credentials) {
           try {
             const response = await axios.post('/api/login', credentials);
             commit('login', response.data);
+
+            // 加载用户邀请信息
+            await dispatch('fetchInvitations');
+
             return response.data;
           } catch (error) {
             throw new Error('登录失败');
@@ -279,6 +286,48 @@ const store = createStore({
         },
         async fetchAllUserDestinations({ state, dispatch }) {
           await Promise.all(state.users.map(user => dispatch('fetchUserDestinations', user.username)));
+        },
+        async sendInvite(context, invite) {
+          try {
+            console.log("Received invite in action - From:", invite.from, "To:", invite.to);
+
+            if (!invite.from || !invite.to) {
+              throw new Error("Invite fields 'from' or 'to' are missing");
+            }
+
+            await api.sendInvite(invite);
+
+            // 获取接收方用户信息
+            const response = await api.getUser(invite.to);
+            const user = response.data;
+
+            // 确保 invitations 属性是一个数组
+            const updatedInvitations = Array.isArray(user.invitations) ? [...user.invitations, invite] : [invite];
+            await api.updateUserInfo({ username: invite.to, invitations: updatedInvitations });
+
+            console.log('Invite sent successfully');
+          } catch (error) {
+            console.error('发送邀请失败:', error);
+            throw error;
+          }
+        },
+        async fetchInvitations({ commit, state }) {
+          try {
+            const response = await api.getUser(state.auth.username);
+            const userDetails = response.data;
+            commit('setInvitations', userDetails.invitations || []); // 确保是一个数组
+          } catch (error) {
+            console.error('获取邀请失败:', error);
+          }
+        },
+        async respondInvite({ dispatch }, { id, response }) {
+          try {
+            await api.respondInvite(id, response);
+            await dispatch('fetchInvitations');
+          } catch (error) {
+            console.error('响应邀请失败:', error);
+            throw error;
+          }
         }
       },
       getters: {
@@ -297,12 +346,7 @@ const store = createStore({
         getCurrentUser: (state) => {
           return state.auth;
         },
-        // getUserDestinations: (state) => (username) => {
-        //   const destinations = state.destinationData
-        //     .filter(destination => destination.username === username)
-        //     .map(destination => destination.destination);
-        //   return destinations; // 保持目的地为数组格式
-        // }
+        getInvitations: (state) => state.auth.invitations,
       }
     }
   }

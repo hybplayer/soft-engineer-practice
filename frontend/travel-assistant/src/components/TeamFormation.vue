@@ -17,12 +17,19 @@
           <span v-else>未指定</span>
         </template>
       </el-table-column>
+      <el-table-column label="操作">
+        <template #default="{ row }">
+          <el-button @click="inviteUser(row.username)">邀请</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
 
+
 <script>
 import { mapGetters, mapState, mapActions } from 'vuex';
+import { ElMessage } from 'element-plus';
 
 export default {
   computed: {
@@ -42,10 +49,20 @@ export default {
   },
 
   methods: {
-    ...mapActions('visitor', ['fetchUsers', 'fetchAllUserDestinations']),
+    ...mapActions('visitor', ['fetchUsers', 'fetchAllUserDestinations', 'sendInvite']),
     async loadUserData() {
       await this.fetchUsers();
       await this.fetchAllUserDestinations();
+    },
+    async inviteUser(username) {
+      try {
+        const invite = { from: this.auth.username, to: username };
+        console.log("Sending invite:", invite); // 打印邀请信息
+        await this.$store.dispatch('visitor/sendInvite', invite);
+        ElMessage.success('邀请发送成功');
+      } catch (error) {
+        ElMessage.error('邀请发送失败');
+      }
     }
   },
 
