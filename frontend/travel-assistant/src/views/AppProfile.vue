@@ -1,6 +1,7 @@
 <template>
   <div class="user-page">
     <h2>个人中心</h2>
+
     <!-- 修改用户名 -->
     <form @submit.prevent="updateUsername" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
@@ -9,6 +10,7 @@
         <button type="submit">保存昵称</button>
       </div>
     </form>
+
     <!-- 修改密码 -->
     <form @submit.prevent="updatePassword" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
@@ -18,6 +20,7 @@
             <el-icon :component="passwordFieldType === 'password' ? Eye : EyeOff" @click="togglePasswordVisibility" />
           </template>
         </el-input>
+
         <label for="confirmPassword">确认新密码：</label>
         <el-input :type="confirmPasswordFieldType" v-model="confirmPassword" class="password-input">
           <template #suffix>
@@ -25,9 +28,11 @@
               @click="toggleConfirmPasswordVisibility" />
           </template>
         </el-input>
+
         <button type="submit">保存密码</button>
       </div>
     </form>
+
     <!-- 修改旅游爱好 -->
     <form @submit.prevent="updateHobby" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
@@ -37,11 +42,13 @@
         <button type="submit">保存爱好</button>
       </div>
     </form>
+
     <!-- 显示用户信息 -->
     <div v-else>
       <p><strong>昵称:</strong> {{ currentProfile.username }}</p>
       <p><strong>旅游爱好:</strong> {{ currentProfile.hobby }}</p>
     </div>
+
     <!-- 新增数据存放区域 -->
     <div class="destination-data">
       <h3>目的地数据存放区</h3>
@@ -67,8 +74,10 @@
             <el-button type="text" size="small" @click="deleteDestination(row.id)">删除</el-button>
           </template>
         </el-table-column>
+
       </el-table>
     </div>
+
     <!-- 编辑目的地表单 -->
     <el-dialog v-model="editDialogVisible" title="编辑目的地" width="600px" class="edit-dialog">
       <el-form :model="editForm" class="edit-form">
@@ -111,6 +120,7 @@
       </template>
     </el-dialog>
   </div>
+
   <div v-if="currentProfile.team">
     <h3>团队成员</h3>
     <ul>
@@ -119,8 +129,9 @@
       </li>
     </ul>
   </div>
+
   <!-- 显示和管理邀请 -->
-  <div class="invitations" v-if="auth.invitations && auth.invitations.length">
+  <div class="invitations" v-if="isCurrentUser && auth.invitations && auth.invitations.length">
     <h3>邀请</h3>
     <el-table :data="auth.invitations" style="width: 100%">
       <el-table-column label="来自">
@@ -173,6 +184,7 @@ export default {
       editIndex: -1,
       postId: 1, // 示例帖子ID
       invitations: [] // 初始化 invitations 数组
+
     };
   },
 
@@ -195,22 +207,11 @@ export default {
     username: 'loadUserProfile' // 监听路由参数变化
   },
   methods: {
-    ...mapActions('visitor', [
-      'updateUserInfo',
-      'editDestinationData',
-      'deleteDestinationData',
-      'fetchUserProfile',
-      'loadUserDestinationData',
-      'fetchInvitations',
-      'respondInvite'
-    ]),
+    ...mapActions('visitor', ['updateUserInfo', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile', 'loadUserDestinationData', 'fetchInvitations', 'respondInvite']),
     async loadUserProfile() {
       console.log("Loading user profile for:", this.username);
       await this.fetchUserProfile(this.username);
       await this.loadUserDestinationData(this.username);
-      this.newNickname = this.currentProfile.username || '';
-      this.hobby = this.currentProfile.hobby || '';
-      this.hobbyLength = this.hobby.length;
     },
     updateUsername() {
       if (this.newNickname) {
@@ -294,6 +295,8 @@ export default {
         await this.respondInvite({ id: invite.id, response: 'accept' });
         this.auth.invitations.splice(index, 1); // 从邀请列表中移除已接受的邀请
         ElMessage.success('已接受邀请');
+        // 刷新邀请列表
+        this.fetchInvitations();
       } catch (error) {
         ElMessage.error('接受邀请失败');
       }
@@ -303,6 +306,8 @@ export default {
         await this.respondInvite({ id: invite.id, response: 'decline' });
         this.auth.invitations.splice(index, 1); // 从邀请列表中移除已拒绝的邀请
         ElMessage.success('已拒绝邀请');
+        // 刷新邀请列表
+        this.fetchInvitations();
       } catch (error) {
         ElMessage.error('拒绝邀请失败');
       }
@@ -311,11 +316,15 @@ export default {
 
   async created() {
     console.log("now username is: ", this.username);
-    await this.loadUserProfile(); // 调用新定义的加载用户数据的方法
+    await this.loadUserProfile(); // 获取对应用户的信息
     console.log("this.isCurrentUser:", this.isCurrentUser);
     if (this.isCurrentUser) {
       await this.$store.dispatch('visitor/fetchInvitations'); // 如果是当前用户，加载邀请信息
     }
+
+    this.newNickname = this.currentProfile.username || '';
+    this.hobby = this.currentProfile.hobby || '';
+    this.hobbyLength = this.hobby.length;
   }
 };
 </script>
