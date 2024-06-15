@@ -231,6 +231,7 @@ const store = createStore({
         async loadPosts({ commit }) {
           try {
             const response = await api.getPosts();
+            console.log("loadPosts: ", response);
             commit('setPosts', response.data);
           } catch (error) {
             console.error('加载帖子数据失败:', error);

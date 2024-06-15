@@ -9,14 +9,15 @@
       </el-carousel>
     </div>
 
-    <!-- 今日推荐 -->
     <div class="section">
       <div class="title">今日推荐</div>
       <ul class="content">
         <li v-for="(post, index) in posts" :key="index">
           <div class="img">
             <router-link :to="{ name: 'ForumPage', query: { postId: post.id } }">
-              <img :class="{ animate: true }" :src="post.image" referrerPolicy="no-referrer" alt="" />
+              <!-- 注意这里使用了post.images数组并取其第一项的imageUrl -->
+              <img v-if="post.images && post.images.length > 0"
+                :src="`data:image/jpeg;base64,${post.images[0].imageUrl}`" referrerPolicy="no-referrer" alt="" />
             </router-link>
           </div>
           <div class="info">
