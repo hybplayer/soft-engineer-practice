@@ -19,7 +19,16 @@ const routes = [
   { path: '/register', component: LoginRegister, name: 'Register', meta: { showFooter: false } },
   { path: '/team-formation', component: TeamFormation, name: 'TeamFormation', meta: { showFooter: true } },
   { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning', meta: { showFooter: true } },
-  { path: '/forumpage', component: ForumPage, name: 'ForumPage', meta: { showFooter: true } },
+  {
+    path: '/forumpage', component: ForumPage, name: 'ForumPage', meta: { showFooter: true },
+    beforeEnter: (to, from, next) => {
+      store.dispatch('visitor/loadPosts').then(() => {
+        next(); // 继续路由导航
+      }).catch(() => {
+        next(false); // 在失败时停止路由导航
+      });
+    }
+  },
   { path: '/user/:username', component: Profile, name: 'UserProfile', props: true, meta: { showFooter: true } },
   { path: '/large-model', component: LargeModel, name: 'LargeModel', meta: { showFooter: true } },
   { path: '/:catchAll(.*)', component: NotFound, name: 'NotFound', meta: { showFooter: false } }

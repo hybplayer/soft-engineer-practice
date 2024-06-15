@@ -32,7 +32,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('visitor', ['auth']),
+    ...mapState('visitor', {
+      currentUser: state => state.auth // 直接映射整个 auth 对象作为 currentUser
+    }),
     ...mapGetters('visitor', ['getComments']),
     comments() {
       return this.getComments(this.postId);
@@ -41,17 +43,22 @@ export default {
   methods: {
     ...mapActions('visitor', ['loadComments', 'addComment']),
     async submitComment() {
-      if (this.newComment.trim()) {
-        const newComment = {
-          postId: this.postId,
-          avatar: this.currentUser.avatar || require("../assets/user-default.png"),
-          username: this.currentUser.username, // 使用当前登录用户的用户名
-          content: this.newComment.trim()
-        };
-        await this.addComment(newComment);
-        this.newComment = "";
-        this.loadComments(this.postId); // 重新加载评论
+      if (!this.currentUser) {
+        console.error("No current user data available.");
+        return;  // 如果没有 currentUser，直接返回避免执行后续代码
       }
+      const avatarUrl = this.currentUser.avatar || require("../assets/user-default.png");
+      const newComment = {
+        postId: this.postId,
+        avatar: avatarUrl,
+        username: this.currentUser.username,
+        content: this.newComment.trim()
+      };
+      await this.addComment(newComment).catch(error => {
+        console.error("Failed to add comment:", error);
+      });
+      this.newComment = "";
+      this.loadComments(this.postId); // 重新加载评论
     },
     viewProfile(username) {
       this.$router.push({ name: 'UserProfile', params: { username } });

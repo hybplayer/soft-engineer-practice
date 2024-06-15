@@ -32,7 +32,7 @@ export default {
     filteredPosts() {
       const postId = this.$route.query.postId;
       if (postId) {
-        return this.posts.filter(post => post.id === postId);
+        return this.posts.filter(post => post.id.toString() === postId);
       }
       return this.posts;
     }
@@ -43,9 +43,10 @@ export default {
       this.showModal = false;
     }
   },
-
   created() {
-    this.loadPosts();
+    this.loadPosts().then(() => {
+      console.log('Posts loaded:', this.posts);
+    })
   }
 };
 </script>
