@@ -77,7 +77,7 @@ const store = createStore({
           state.currentProfile.hobby = profile.hobby;
           state.currentProfile.avatar = profile.avatar;
           state.currentProfile.password = profile.password;
-          // console.log(state.currentProfile.username, state.currentProfile.hobby);
+          console.log("state.currentProfile:", state.currentProfile);
         },
         setPosts(state, posts) {
           state.posts = posts;
@@ -107,6 +107,10 @@ const store = createStore({
         },
         setInvitations(state, invitations) {
           state.auth.invitations = invitations;
+          console.log("state.auth.invitations:", state.auth.invitations);
+        },
+        removeInvitation(state, index) {
+          state.auth.invitations.splice(index, 1);
         }
       },
       actions: {
@@ -136,6 +140,7 @@ const store = createStore({
           try {
             console.log(`Fetching user profile for: ${username}`);
             const response = await api.getUser(username);
+            console.log("user data:", response.data);
             commit('loadUser', response.data);
           } catch (error) {
             console.error('加载用户数据失败:', error);
@@ -154,7 +159,7 @@ const store = createStore({
           try {
             console.log(`Fetching user profile for: ${username}`); // 打印URL调试
             const response = await api.getUser(username);
-            console.log(response);
+            console.log("fetchUserProfile:", response.data);
             commit('setCurrentProfile', response.data);
             return response.data;
           } catch (error) {
@@ -285,49 +290,36 @@ const store = createStore({
             console.error(`加载用户 ${username} 的目的地数据失败:`, error);
           }
         },
-        async fetchAllUserDestinations({ state, dispatch }) {
-          await Promise.all(state.users.map(user => dispatch('fetchUserDestinations', user.username)));
-        },
-        async sendInvite(context, invite) {
-          try {
-            console.log("Received invite in action - From:", invite.from, "To:", invite.to);
-
-            if (!invite.from || !invite.to) {
-              throw new Error("Invite fields 'from' or 'to' are missing");
-            }
-
-            await api.sendInvite(invite);
-
-            // 获取接收方用户信息
-            const response = await api.getUser(invite.to);
-            const user = response.data;
-
-            // 确保 invitations 属性是一个数组
-            const updatedInvitations = Array.isArray(user.invitations) ? [...user.invitations, invite] : [invite];
-            await api.updateUserInfo({ username: invite.to, invitations: updatedInvitations });
-
-            console.log('Invite sent successfully');
-          } catch (error) {
-            console.error('发送邀请失败:', error);
-            throw error;
-          }
-        },
         async fetchInvitations({ commit, state }) {
+          if (!state.auth.username) {
+            console.error('No username set in auth state.');
+            return;
+          }
           try {
-            const response = await api.getUser(state.auth.username);
-            const userDetails = response.data;
-            commit('setInvitations', userDetails.invitations || []); // 确保是一个数组
+            console.log("here fetchInvitations");
+            const response = await api.getInvitations(state.auth.username); // 传递 username 参数
+            commit('setInvitations', response.data);
+            console.log('Fetched invitations:', response.data);
           } catch (error) {
-            console.error('获取邀请失败:', error);
+            console.error('Failed to fetch invitations:', error);
           }
         },
-        async respondInvite({ dispatch }, { id, response }) {
+        async sendInvite({ commit }, invite) {
           try {
-            await api.respondInvite(id, response);
-            await dispatch('fetchInvitations');
+            const response = await api.sendInvite(invite);
+            commit('addInvitation', response.data); // 提交 mutation 来添加邀请
+            return response.data; // 返回响应数据以供进一步处理（如果需要）
           } catch (error) {
-            console.error('响应邀请失败:', error);
-            throw error;
+            throw new Error('发送邀请失败: ' + error.message);
+          }
+        },
+        async respondInvite({ commit }, { id, response }) {
+          try {
+            const result = await api.respondInvite(id, response);
+            console.log("result", result);
+            commit('removeInvitation', id); // 假设 id 是邀请在数组中的索引，这需要调整
+          } catch (error) {
+            throw new Error('响应邀请失败: ' + error.message);
           }
         }
       },
@@ -347,7 +339,10 @@ const store = createStore({
         getCurrentUser: (state) => {
           return state.auth;
         },
-        getInvitations: (state) => state.auth.invitations,
+        addInvitation(state, invitation) {
+          console.log("addInvitation:", invitation);
+          state.auth.invitations.push(invitation);
+        }
       }
     }
   }

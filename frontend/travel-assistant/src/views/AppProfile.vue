@@ -125,7 +125,7 @@
   <div class="invitations" v-if="auth.invitations && auth.invitations.length">
     <h3>邀请</h3>
     <el-table :data="auth.invitations" style="width: 100%">
-      <el-table-column prop="from" label="来自"></el-table-column>
+      <el-table-column prop="from.username" label="来自"></el-table-column>
       <el-table-column label="操作">
         <template #default="{ row, $index }">
           <el-button type="success" @click="acceptInvite(row, $index)">接受</el-button>
@@ -293,8 +293,9 @@ export default {
     console.log("now username is: ", this.username);
     await this.$store.dispatch('visitor/fetchUserProfile', this.username); // 获取对应用户的信息
     await this.$store.dispatch('visitor/loadUserDestinationData', this.username); // 确保在页面加载时获取最新的数据
+    console.log("this.isCurrentUser:", this.isCurrentUser);
     if (this.isCurrentUser) {
-      await this.fetchInvitations(); // 如果是当前用户，加载邀请信息
+      await this.$store.dispatch('visitor/fetchInvitations'); // 如果是当前用户，加载邀请信息
     }
 
     this.newNickname = this.currentProfile.username || '';
