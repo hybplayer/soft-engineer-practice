@@ -1,7 +1,6 @@
 <template>
   <div class="user-page">
     <h2>个人中心</h2>
-
     <!-- 修改用户名 -->
     <form @submit.prevent="updateUsername" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
@@ -10,7 +9,6 @@
         <button type="submit">保存昵称</button>
       </div>
     </form>
-
     <!-- 修改密码 -->
     <form @submit.prevent="updatePassword" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
@@ -20,7 +18,6 @@
             <el-icon :component="passwordFieldType === 'password' ? Eye : EyeOff" @click="togglePasswordVisibility" />
           </template>
         </el-input>
-
         <label for="confirmPassword">确认新密码：</label>
         <el-input :type="confirmPasswordFieldType" v-model="confirmPassword" class="password-input">
           <template #suffix>
@@ -28,11 +25,9 @@
               @click="toggleConfirmPasswordVisibility" />
           </template>
         </el-input>
-
         <button type="submit">保存密码</button>
       </div>
     </form>
-
     <!-- 修改旅游爱好 -->
     <form @submit.prevent="updateHobby" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
@@ -42,13 +37,11 @@
         <button type="submit">保存爱好</button>
       </div>
     </form>
-
     <!-- 显示用户信息 -->
     <div v-else>
       <p><strong>昵称:</strong> {{ currentProfile.username }}</p>
       <p><strong>旅游爱好:</strong> {{ currentProfile.hobby }}</p>
     </div>
-
     <!-- 新增数据存放区域 -->
     <div class="destination-data">
       <h3>目的地数据存放区</h3>
@@ -74,10 +67,8 @@
             <el-button type="text" size="small" @click="deleteDestination(row.id)">删除</el-button>
           </template>
         </el-table-column>
-
       </el-table>
     </div>
-
     <!-- 编辑目的地表单 -->
     <el-dialog v-model="editDialogVisible" title="编辑目的地" width="600px" class="edit-dialog">
       <el-form :model="editForm" class="edit-form">
@@ -120,12 +111,23 @@
       </template>
     </el-dialog>
   </div>
-
+  <div v-if="currentProfile.team">
+    <h3>团队成员</h3>
+    <ul>
+      <li v-for="member in currentProfile.team.members" :key="member.id">
+        {{ member.username }}
+      </li>
+    </ul>
+  </div>
   <!-- 显示和管理邀请 -->
   <div class="invitations" v-if="auth.invitations && auth.invitations.length">
     <h3>邀请</h3>
     <el-table :data="auth.invitations" style="width: 100%">
-      <el-table-column prop="from.username" label="来自"></el-table-column>
+      <el-table-column label="来自">
+        <template #default="{ row }">
+          <router-link :to="`/user/${row.from.username}`">{{ row.from.username }}</router-link>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template #default="{ row, $index }">
           <el-button type="success" @click="acceptInvite(row, $index)">接受</el-button>
@@ -171,7 +173,6 @@ export default {
       editIndex: -1,
       postId: 1, // 示例帖子ID
       invitations: [] // 初始化 invitations 数组
-
     };
   },
 
@@ -190,8 +191,27 @@ export default {
       return this.username === this.auth.username;
     }
   },
+  watch: {
+    username: 'loadUserProfile' // 监听路由参数变化
+  },
   methods: {
-    ...mapActions('visitor', ['updateUserInfo', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile', 'loadUserDestinationData', 'fetchInvitations', 'respondInvite']),
+    ...mapActions('visitor', [
+      'updateUserInfo',
+      'editDestinationData',
+      'deleteDestinationData',
+      'fetchUserProfile',
+      'loadUserDestinationData',
+      'fetchInvitations',
+      'respondInvite'
+    ]),
+    async loadUserProfile() {
+      console.log("Loading user profile for:", this.username);
+      await this.fetchUserProfile(this.username);
+      await this.loadUserDestinationData(this.username);
+      this.newNickname = this.currentProfile.username || '';
+      this.hobby = this.currentProfile.hobby || '';
+      this.hobbyLength = this.hobby.length;
+    },
     updateUsername() {
       if (this.newNickname) {
         const userExists = this.getUsers.some(user => user.username === this.newNickname);
@@ -291,19 +311,12 @@ export default {
 
   async created() {
     console.log("now username is: ", this.username);
-    await this.$store.dispatch('visitor/fetchUserProfile', this.username); // 获取对应用户的信息
-    await this.$store.dispatch('visitor/loadUserDestinationData', this.username); // 确保在页面加载时获取最新的数据
+    await this.loadUserProfile(); // 调用新定义的加载用户数据的方法
     console.log("this.isCurrentUser:", this.isCurrentUser);
     if (this.isCurrentUser) {
       await this.$store.dispatch('visitor/fetchInvitations'); // 如果是当前用户，加载邀请信息
     }
-
-    this.newNickname = this.currentProfile.username || '';
-    this.hobby = this.currentProfile.hobby || '';
-    this.hobbyLength = this.hobby.length;
   }
-
-
 };
 </script>
 
