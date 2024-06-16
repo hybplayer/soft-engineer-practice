@@ -1,7 +1,16 @@
 <template>
   <div class="team-formation">
     <h2>自动组建团队</h2>
-    <el-table :data="userList" style="width: 100%">
+
+    <!-- 添加选择框 -->
+    <div class="user-count-selector">
+      <label for="user-count">显示用户数量：</label>
+      <el-select v-model="userCount" placeholder="请选择" @change="updateUserList">
+        <el-option v-for="count in userCountOptions" :key="count" :label="count" :value="count"></el-option>
+      </el-select>
+    </div>
+
+    <el-table :data="userListToShow" style="width: 100%">
       <el-table-column prop="username" label="用户名">
         <template #default="{ row }">
           <router-link :to="'/user/' + row.username">{{ row.username }}</router-link>
@@ -26,12 +35,17 @@
   </div>
 </template>
 
-
 <script>
 import { mapGetters, mapState, mapActions } from 'vuex';
 import { ElMessage } from 'element-plus';
 
 export default {
+  data() {
+    return {
+      userCount: 5, // 默认显示用户数量
+      userCountOptions: [5, 10, 15, 20], // 可选的用户数量
+    };
+  },
   computed: {
     ...mapState('visitor', ['auth']),
     ...mapGetters('visitor', ['getUsers', 'getUserDestinations']),
@@ -45,9 +59,11 @@ export default {
         }));
       console.log("用户列表:", users); // 调试信息
       return users;
+    },
+    userListToShow() {
+      return this.userList.slice(0, this.userCount); // 返回指定数量的用户
     }
   },
-
   methods: {
     ...mapActions('visitor', ['fetchUsers', 'fetchAllUserDestinations', 'sendInvite']),
     async loadUserData() {
@@ -63,9 +79,12 @@ export default {
       } catch (error) {
         ElMessage.error('邀请发送失败');
       }
+    },
+    updateUserList() {
+      // 更新用户列表时触发
+      console.log("用户数量更新为:", this.userCount); // 调试信息
     }
   },
-
   async created() {
     await this.loadUserData(); // 确保在created钩子中等待所有数据加载完成
   }
@@ -76,6 +95,11 @@ export default {
 .team-formation {
   text-align: center;
   padding: 20px;
+}
+
+.user-count-selector {
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .el-table {

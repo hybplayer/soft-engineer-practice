@@ -97,6 +97,10 @@ const api = {
 
     getTeamByUsername(username) {
         return axios.get(`${API_BASE_URL}/teams/user/${username}`);
+    },
+
+    leaveTeam(username) {
+        return axios.post(`${API_BASE_URL}/teams/leaveTeam`, { username });
     }
 };
 

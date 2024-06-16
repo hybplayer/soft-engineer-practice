@@ -123,6 +123,10 @@ const store = createStore({
             }
             return user;
           });
+        },
+        removeTeam(state) {
+          state.auth.team = null;
+          state.currentProfile.team = null;
         }
       },
       actions: {
@@ -342,11 +346,27 @@ const store = createStore({
           try {
             const teamResponse = await api.getTeamByUsername(username);
             console.log("teamResponse: ", teamResponse);
-            commit('setTeam', { username, team: teamResponse.data });
+            // 对团队成员进行排序，例如按用户名排序
+            const sortedTeam = {
+              ...teamResponse.data,
+              members: teamResponse.data.members.sort((a, b) => a.username.localeCompare(b.username))
+            };
+            commit('setTeam', { username, team: sortedTeam });
           } catch (error) {
             console.error('获取团队信息失败:', error);
           }
         },
+        async leaveTeam({ commit, state }) {
+          try {
+            console.log("Dispatching leaveTeam action for user:", state.auth.username);
+            await api.leaveTeam(state.auth.username); // 假设有对应的API
+            console.log("API call to leave team succeeded");
+            commit('removeTeam');
+          } catch (error) {
+            console.error("API call to leave team failed:", error);
+            throw new Error('退出团队失败: ' + error.message);
+          }
+        }
       },
       getters: {
         getDestinationData: (state) => (username) => {

@@ -121,20 +121,21 @@
     </el-dialog>
   </div>
 
-  <div v-if="currentProfile.team && currentProfile.team.members && currentProfile.team.members.length">
+  <div v-if="currentProfile.team">
     <h3>团队成员</h3>
-    <ul>
+    <ul v-if="currentProfile.team.members && currentProfile.team.members.length">
       <li v-for="member in currentProfile.team.members" :key="member.id">
-        {{ member.username }}
+        <router-link :to="{ name: 'UserProfile', params: { username: member.username } }">{{ member.username
+          }}</router-link>
       </li>
     </ul>
+    <el-button v-if="isCurrentUser" type="danger" @click="leaveTeam">退出团队</el-button>
+    <p v-else>暂无团队成员</p>
   </div>
   <div v-else>
     <h3>团队成员</h3>
-    <p>暂无团队成员</p>
+    <p>暂无团队</p>
   </div>
-
-
 
   <!-- 显示和管理邀请 -->
   <div class="invitations" v-if="isCurrentUser && auth.invitations && auth.invitations.length">
@@ -221,7 +222,8 @@ export default {
       'loadUserDestinationData',
       'fetchInvitations',
       'respondInvite',
-      'fetchTeamByUsername' // 确保映射 fetchTeamByUsername 方法
+      'fetchTeamByUsername', // 确保映射 fetchTeamByUsername 方法
+      'leaveTeam',
     ]),
     async loadUserProfile() {
       console.log("Loading user profile for:", this.username);
@@ -328,7 +330,17 @@ export default {
       }
     }
   },
-
+  async leaveTeam() {
+    try {
+      console.log("Trying to leave the team for user:", this.auth.username);
+      await this.$store.dispatch('visitor/leaveTeam');
+      console.log("Left the team successfully");
+      this.$message.success('已成功退出团队');
+    } catch (error) {
+      console.error("Failed to leave the team:", error);
+      this.$message.error('退出团队失败');
+    }
+  },
   async created() {
     console.log("now username is: ", this.username);
     await this.loadUserProfile(); // 获取对应用户的信息
