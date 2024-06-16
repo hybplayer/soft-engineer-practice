@@ -14,14 +14,16 @@ const store = createStore({
           avatar: '',
           password: '',
           hobby: '',
-          invitations: []
+          invitations: [],
+          team: [] // 添加团队信息
         },
         // 当前资料卡的用户
         currentProfile: {
           username: '',
           hobby: '',
           avatar: '',
-          password: ''
+          password: '',
+          team: [] // 添加团队信息
         },
         users: [],
         destinationData: [],
@@ -92,10 +94,6 @@ const store = createStore({
         addComment(state, comment) {
           state.comments.push(comment);
         },
-        // setAllComments(state, comments) {
-        //   // 你的设置所有帖子的评论的逻辑
-        //   state.allComments = comments;
-        // },
         setUsers(state, users) {
           state.users = users;
         },
@@ -107,10 +105,24 @@ const store = createStore({
         },
         setInvitations(state, invitations) {
           state.auth.invitations = invitations;
-          console.log("state.auth.invitations:", state.auth.invitations);
+          console.log("state.auth.invitations:", invitations);
         },
-        removeInvitation(state, index) {
-          state.auth.invitations.splice(index, 1);
+        removeInvitation(state, id) {
+          state.auth.invitations = state.auth.invitations.filter(invite => invite.id !== id);
+        },
+        setTeam(state, { username, team }) {
+          if (state.auth.username === username) {
+            state.auth.team = team;
+          }
+          if (state.currentProfile.username === username) {
+            state.currentProfile.team = team;
+          }
+          state.users = state.users.map(user => {
+            if (team.members.some(member => member.username === user.username)) {
+              return { ...user, team };
+            }
+            return user;
+          });
         }
       },
       actions: {
@@ -298,8 +310,9 @@ const store = createStore({
           try {
             console.log("here fetchInvitations");
             const response = await api.getInvitations(state.auth.username); // 传递 username 参数
-            commit('setInvitations', response.data);
-            console.log('Fetched invitations:', response.data);
+            const pendingInvitations = response.data.filter(invite => invite.status === 'pending');
+            console.log('Fetched invitations:', pendingInvitations);
+            commit('setInvitations', pendingInvitations);
           } catch (error) {
             console.error('Failed to fetch invitations:', error);
           }
@@ -313,15 +326,27 @@ const store = createStore({
             throw new Error('发送邀请失败: ' + error.message);
           }
         },
-        async respondInvite({ commit }, { id, response }) {
+        async respondInvite({ commit, dispatch, state }, { id, response }) {
           try {
             const result = await api.respondInvite(id, response);
             console.log("result", result);
             commit('removeInvitation', id); // 假设 id 是邀请在数组中的索引，这需要调整
+            // 刷新团队信息
+            await dispatch('fetchTeamByUsername', state.auth.username);
+
           } catch (error) {
             throw new Error('响应邀请失败: ' + error.message);
           }
-        }
+        },
+        async fetchTeamByUsername({ commit }, username) {
+          try {
+            const teamResponse = await api.getTeamByUsername(username);
+            console.log("teamResponse: ", teamResponse);
+            commit('setTeam', { username, team: teamResponse.data });
+          } catch (error) {
+            console.error('获取团队信息失败:', error);
+          }
+        },
       },
       getters: {
         getDestinationData: (state) => (username) => {

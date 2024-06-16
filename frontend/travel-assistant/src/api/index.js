@@ -93,6 +93,10 @@ const api = {
     // 获取邀请
     getInvitations(username) {
         return axios.get(`${API_BASE_URL}/invitations?username=${username}`);
+    },
+
+    getTeamByUsername(username) {
+        return axios.get(`${API_BASE_URL}/teams/user/${username}`);
     }
 };
 

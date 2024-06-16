@@ -121,7 +121,7 @@
     </el-dialog>
   </div>
 
-  <div v-if="currentProfile.team">
+  <div v-if="currentProfile.team && currentProfile.team.members && currentProfile.team.members.length">
     <h3>团队成员</h3>
     <ul>
       <li v-for="member in currentProfile.team.members" :key="member.id">
@@ -129,6 +129,12 @@
       </li>
     </ul>
   </div>
+  <div v-else>
+    <h3>团队成员</h3>
+    <p>暂无团队成员</p>
+  </div>
+
+
 
   <!-- 显示和管理邀请 -->
   <div class="invitations" v-if="isCurrentUser && auth.invitations && auth.invitations.length">
@@ -207,11 +213,22 @@ export default {
     username: 'loadUserProfile' // 监听路由参数变化
   },
   methods: {
-    ...mapActions('visitor', ['updateUserInfo', 'editDestinationData', 'deleteDestinationData', 'fetchUserProfile', 'loadUserDestinationData', 'fetchInvitations', 'respondInvite']),
+    ...mapActions('visitor', [
+      'updateUserInfo',
+      'editDestinationData',
+      'deleteDestinationData',
+      'fetchUserProfile',
+      'loadUserDestinationData',
+      'fetchInvitations',
+      'respondInvite',
+      'fetchTeamByUsername' // 确保映射 fetchTeamByUsername 方法
+    ]),
     async loadUserProfile() {
       console.log("Loading user profile for:", this.username);
       await this.fetchUserProfile(this.username);
       await this.loadUserDestinationData(this.username);
+      await this.fetchTeamByUsername(this.username);
+
     },
     updateUsername() {
       if (this.newNickname) {
@@ -290,21 +307,19 @@ export default {
           console.error('编辑目的地失败:', error);
         });
     },
-    async acceptInvite(invite, index) {
+    async acceptInvite(invite) {
       try {
         await this.respondInvite({ id: invite.id, response: 'accept' });
-        this.auth.invitations.splice(index, 1); // 从邀请列表中移除已接受的邀请
         ElMessage.success('已接受邀请');
         // 刷新邀请列表
-        this.fetchInvitations();
+        await this.fetchInvitations();
       } catch (error) {
         ElMessage.error('接受邀请失败');
       }
     },
-    async declineInvite(invite, index) {
+    async declineInvite(invite) {
       try {
         await this.respondInvite({ id: invite.id, response: 'decline' });
-        this.auth.invitations.splice(index, 1); // 从邀请列表中移除已拒绝的邀请
         ElMessage.success('已拒绝邀请');
         // 刷新邀请列表
         this.fetchInvitations();
