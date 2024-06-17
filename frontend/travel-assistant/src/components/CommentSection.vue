@@ -3,7 +3,8 @@
     <h3>评论</h3>
     <div v-for="comment in comments" :key="comment.id" class="comment">
       <div class="comment-header">
-        <img :src="comment.avatar" alt="avatar" class="comment-avatar" />
+        <!-- <img :src="comment.avatar || defaultAvatar" alt="avatar" class="comment-avatar" /> -->
+        <img :src="defaultAvatar" alt="avatar" class="comment-avatar" />
         <span @click="viewProfile(comment.username)" class="comment-username">{{ comment.username }}</span>
       </div>
       <p class="comment-content">{{ comment.content }}</p>
@@ -28,16 +29,20 @@ export default {
   },
   data() {
     return {
-      newComment: ""
+      newComment: "",
+      defaultAvatar: require("../assets/user-default-2.png") // 默认头像的路径
     };
   },
   computed: {
     ...mapState('visitor', {
-      currentUser: state => state.auth // 直接映射整个 auth 对象作为 currentUser
+      currentUser: state => state.auth // 映射整个 auth 对象作为 currentUser
     }),
     ...mapGetters('visitor', ['getComments']),
     comments() {
-      return this.getComments(this.postId);
+      return this.getComments(this.postId).map(comment => ({
+        ...comment,
+        avatar: comment.avatar || this.defaultAvatar // 如果没有头像则使用默认头像
+      }));
     }
   },
   methods: {
@@ -47,7 +52,7 @@ export default {
         console.error("No current user data available.");
         return;  // 如果没有 currentUser，直接返回避免执行后续代码
       }
-      const avatarUrl = this.currentUser.avatar || require("../assets/user-default.png");
+      const avatarUrl = this.currentUser.avatar || this.defaultAvatar;
       const newComment = {
         postId: this.postId,
         avatar: avatarUrl,

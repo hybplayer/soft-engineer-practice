@@ -1,6 +1,6 @@
 <template>
   <div class="team-formation">
-    <h2>自动组建团队</h2>
+    <h2 class="section-title">自动组建团队</h2>
 
     <!-- 添加选择框 -->
     <div class="user-count-selector">
@@ -10,10 +10,10 @@
       </el-select>
     </div>
 
-    <el-table :data="userListToShow" style="width: 100%">
+    <el-table :data="userListToShow" class="user-table">
       <el-table-column prop="username" label="用户名">
         <template #default="{ row }">
-          <router-link :to="'/user/' + row.username">{{ row.username }}</router-link>
+          <router-link :to="'/user/' + row.username" class="username-link">{{ row.username }}</router-link>
         </template>
       </el-table-column>
       <el-table-column prop="hobby" label="旅游爱好"></el-table-column>
@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template #default="{ row }">
-          <el-button @click="inviteUser(row.username)">邀请</el-button>
+          <el-button @click="inviteUser(row.username)" type="primary">邀请</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -36,32 +36,30 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions } from 'vuex';
-import { ElMessage } from 'element-plus';
+import {mapGetters, mapState, mapActions} from 'vuex';
+import {ElMessage} from 'element-plus';
 
 export default {
   data() {
     return {
-      userCount: 5, // 默认显示用户数量
-      userCountOptions: [5, 10, 15, 20], // 可选的用户数量
+      userCount: 5,
+      userCountOptions: [5, 10, 15, 20],
     };
   },
   computed: {
     ...mapState('visitor', ['auth']),
     ...mapGetters('visitor', ['getUsers', 'getUserDestinations']),
     userList() {
-      const users = this.getUsers
-        .filter(user => user.username !== this.auth.username) // 排除当前用户
-        .map(user => ({
-          username: user.username,
-          hobby: user.hobby,
-          destinations: this.getUserDestinations(user.username) // 获取并返回目的地数组
-        }));
-      console.log("用户列表:", users); // 调试信息
-      return users;
+      return this.getUsers
+          .filter(user => user.username !== this.auth.username)
+          .map(user => ({
+            username: user.username,
+            hobby: user.hobby,
+            destinations: this.getUserDestinations(user.username)
+          }));
     },
     userListToShow() {
-      return this.userList.slice(0, this.userCount); // 返回指定数量的用户
+      return this.userList.slice(0, this.userCount);
     }
   },
   methods: {
@@ -72,8 +70,7 @@ export default {
     },
     async inviteUser(username) {
       try {
-        const invite = { from: this.auth.username, to: username };
-        console.log("Sending invite:", invite); // 打印邀请信息
+        const invite = {from: this.auth.username, to: username};
         await this.$store.dispatch('visitor/sendInvite', invite);
         ElMessage.success('邀请发送成功');
       } catch (error) {
@@ -81,12 +78,11 @@ export default {
       }
     },
     updateUserList() {
-      // 更新用户列表时触发
-      console.log("用户数量更新为:", this.userCount); // 调试信息
+      console.log("用户数量更新为:", this.userCount);
     }
   },
   async created() {
-    await this.loadUserData(); // 确保在created钩子中等待所有数据加载完成
+    await this.loadUserData();
   }
 };
 </script>
@@ -95,6 +91,15 @@ export default {
 .team-formation {
   text-align: center;
   padding: 20px;
+  background: linear-gradient(to right, #f0f0f0, #ffffff); /* 渐变色背景 */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+.section-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .user-count-selector {
@@ -102,7 +107,31 @@ export default {
   text-align: left;
 }
 
-.el-table {
+.user-table {
   margin-top: 20px;
+}
+
+.username-link {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+.el-button {
+  border-radius: 20px; /* 圆角按钮 */
+  font-weight: bold;
+}
+
+.el-table-column {
+  color: #666;
+}
+
+.el-table__body-wrapper {
+  overflow-x: auto; /* 如果表格数据较多，允许水平滚动 */
+}
+
+@media screen and (max-width: 768px) {
+  .team-formation {
+    padding: 10px;
+  }
 }
 </style>

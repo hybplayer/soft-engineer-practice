@@ -25,7 +25,7 @@
         <el-input :type="confirmPasswordFieldType" v-model="confirmPassword" class="password-input">
           <template #suffix>
             <el-icon :component="confirmPasswordFieldType === 'password' ? Eye : EyeOff"
-              @click="toggleConfirmPasswordVisibility" />
+                     @click="toggleConfirmPasswordVisibility" />
           </template>
         </el-input>
 
@@ -52,7 +52,7 @@
     <!-- 新增数据存放区域 -->
     <div class="destination-data">
       <h3>目的地数据存放区</h3>
-      <el-table :data="destinationData" :style="{ border: '1px solid #ccc' }" class="destination-table">
+      <el-table :data="destinationData" class="destination-table">
         <el-table-column prop="departure" label="出发地"></el-table-column>
         <el-table-column prop="destination" label="目的地"></el-table-column>
         <el-table-column prop="departureDate" label="出发日期"></el-table-column>
@@ -74,7 +74,6 @@
             <el-button type="text" size="small" @click="deleteDestination(row.id)">删除</el-button>
           </template>
         </el-table-column>
-
       </el-table>
     </div>
 
@@ -113,46 +112,46 @@
         <el-form-item label="备注">
           <el-input type="textarea" v-model="editForm.remark"></el-input>
         </el-form-item>
+        <el-form-item>
+          <el-button @click="editDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveEdit">保存</el-button>
+        </el-form-item>
       </el-form>
-      <template v-slot:footer>
-        <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveEdit">保存</el-button>
-      </template>
     </el-dialog>
-  </div>
 
-  <div v-if="currentProfile.team">
-    <h3>团队成员</h3>
-    <ul v-if="currentProfile.team.members && currentProfile.team.members.length">
-      <li v-for="member in currentProfile.team.members" :key="member.id">
-        <router-link :to="{ name: 'UserProfile', params: { username: member.username } }">{{ member.username
-          }}</router-link>
-      </li>
-    </ul>
-    <el-button v-if="isCurrentUser" type="danger" @click="leaveTeam">退出团队</el-button>
-    <p v-else>暂无团队成员</p>
-  </div>
-  <div v-else>
-    <h3>团队成员</h3>
-    <p>暂无团队</p>
-  </div>
+    <!-- 团队成员 -->
+    <div class="team-members" v-if="currentProfile.team">
+      <h3>团队成员</h3>
+      <ul v-if="currentProfile.team.members && currentProfile.team.members.length">
+        <li v-for="member in currentProfile.team.members" :key="member.id">
+          <router-link :to="{ name: 'UserProfile', params: { username: member.username } }">{{ member.username }}</router-link>
+        </li>
+      </ul>
+      <el-button class="leave-team-btn" v-if="isCurrentUser" type="danger" @click="leaveTeam">退出团队</el-button>
+      <p v-else>暂无团队成员</p>
+    </div>
+    <div v-else>
+      <h3>团队成员</h3>
+      <p>暂无团队</p>
+    </div>
 
-  <!-- 显示和管理邀请 -->
-  <div class="invitations" v-if="isCurrentUser && auth.invitations && auth.invitations.length">
-    <h3>邀请</h3>
-    <el-table :data="auth.invitations" style="width: 100%">
-      <el-table-column label="来自">
-        <template #default="{ row }">
-          <router-link :to="`/user/${row.from.username}`">{{ row.from.username }}</router-link>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
-        <template #default="{ row, $index }">
-          <el-button type="success" @click="acceptInvite(row, $index)">接受</el-button>
-          <el-button type="danger" @click="declineInvite(row, $index)">拒绝</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 显示和管理邀请 -->
+    <div class="invitations" v-if="isCurrentUser && auth.invitations && auth.invitations.length">
+      <h3>邀请</h3>
+      <el-table :data="auth.invitations" class="invitation-table">
+        <el-table-column label="来自">
+          <template #default="{ row }">
+            <router-link :to="`/user/${row.from.username}`" class="username-link">{{ row.from.username }}</router-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template #default="{ row, $index }">
+            <el-button type="success" @click="acceptInvite(row, $index)">接受</el-button>
+            <el-button type="danger" @click="declineInvite(row, $index)">拒绝</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 
@@ -357,14 +356,39 @@ export default {
 </script>
 
 <style scoped lang="less">
+@primary-color: #2c3e50;
+@secondary-color: #18bc9c;
+@background-color: #ecf0f1;
+@card-background: #ffffff;
+@font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+@button-hover-color: lighten(@primary-color, 10%);
+@danger-color: #e74c3c;
+@border-color: #dcdcdc;
+
 .user-page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  background: @background-color;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: @font-family;
+  color: @primary-color;
+
+  h2 {
+    color: @primary-color;
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
 }
 
 .edit-form {
   margin-bottom: 20px;
+  padding: 20px;
+  background: @card-background;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   .edit {
     display: flex;
@@ -373,16 +397,37 @@ export default {
 
     label {
       margin-right: 10px;
+      font-weight: bold;
+      color: @primary-color;
     }
 
     input,
     textarea,
     .el-input {
       flex: 1;
+      padding: 10px;
+      border: 1px solid @border-color;
+      border-radius: 5px;
+      transition: border-color 0.3s;
+
+      &:focus {
+        border-color: @primary-color;
+      }
     }
 
     button {
       margin-left: 10px;
+      padding: 10px 20px;
+      background: @primary-color;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: @button-hover-color;
+      }
     }
   }
 
@@ -393,9 +438,13 @@ export default {
 
 .destination-data {
   margin-top: 20px;
+  padding: 20px;
+  background: @card-background;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   h3 {
-    font-size: 20px;
+    font-size: 1.5em;
     margin-bottom: 10px;
   }
 
@@ -408,24 +457,120 @@ export default {
   }
 }
 
+.team-members {
+  margin-top: 20px;
+  padding: 20px;
+  background: @card-background;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: 10px;
+
+      a {
+        color: @primary-color;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .leave-team-btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: @danger-color;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: darken(@danger-color, 10%);
+    }
+  }
+}
+
+.username-link {
+  color: @primary-color;
+  text-decoration: none;
+
+  &:hover {
+    color: darken(@primary-color, 10%);
+  }
+}
+
+.invitations {
+  margin-top: 20px;
+  padding: 20px;
+  background: @card-background;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+
+  .el-table {
+    width: 100%;
+  }
+
+  .el-button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background: @primary-color;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: @button-hover-color;
+    }
+
+    &.el-button--success {
+      background: @secondary-color;
+
+      &:hover {
+        background-color: darken(@secondary-color, 10%);
+      }
+    }
+
+    &.el-button--danger {
+      background: @danger-color;
+
+      &:hover {
+        background-color: darken(@danger-color, 10%);
+      }
+    }
+  }
+}
+
 .el-dialog__body {
   max-height: 400px;
   overflow-y: auto;
 }
 
 .el-dialog__footer {
-  padding: 1px 2px;
-  background-color: #ff0000;
-  /* 确保背景颜色与对话框一致 */
-  border-top: 1px solid #e00808;
-  /* 添加顶部边框以区分内容和底部 */
+  padding: 10px 20px;
+  background-color: @background-color;
+  border-top: 1px solid @border-color;
   display: flex;
   justify-content: flex-end;
-  /* 确保按钮在右侧对齐 */
-}
-
-.el-button {
-  margin-left: 10px;
 }
 
 .el-dialog__wrapper {
@@ -436,5 +581,12 @@ export default {
 
 .edit-dialog {
   width: 600px;
+
+  .el-dialog__header {
+    background: @primary-color;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px 10px 0 0;
+  }
 }
 </style>

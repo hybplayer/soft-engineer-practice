@@ -17,8 +17,8 @@ const routes = [
   { path: '/travel-intention', component: TravelIntention, name: 'TravelIntention', meta: { showFooter: true } },
   { path: '/login', component: LoginRegister, name: 'Login', meta: { showFooter: true } },
   { path: '/register', component: LoginRegister, name: 'Register', meta: { showFooter: false } },
-  { path: '/team-formation', component: TeamFormation, name: 'TeamFormation', meta: { showFooter: true } },
-  { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning', meta: { showFooter: true } },
+  { path: '/team-formation', component: TeamFormation, name: 'TeamFormation', meta: { showFooter: false } },
+  { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning', meta: { showFooter: false } },
   {
     path: '/forumpage', component: ForumPage, name: 'ForumPage', meta: { showFooter: true },
     beforeEnter: (to, from, next) => {
@@ -29,7 +29,7 @@ const routes = [
       });
     }
   },
-  { path: '/user/:username', component: Profile, name: 'UserProfile', props: true, meta: { showFooter: true } },
+  { path: '/user/:username', component: Profile, name: 'UserProfile', props: true, meta: { showFooter: false } },
   { path: '/large-model', component: LargeModel, name: 'LargeModel', meta: { showFooter: true } },
   { path: '/:catchAll(.*)', component: NotFound, name: 'NotFound', meta: { showFooter: false } }
 ];
