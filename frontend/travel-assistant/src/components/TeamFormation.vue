@@ -10,7 +10,7 @@
       </el-select>
     </div>
 
-    <el-table :data="userListToShow" class="user-table">
+    <el-table :key="userCount" :data="userListToShow" class="user-table">
       <el-table-column prop="username" label="用户名">
         <template #default="{ row }">
           <router-link :to="'/user/' + row.username" class="username-link">{{ row.username }}</router-link>
@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import {mapGetters, mapState, mapActions} from 'vuex';
-import {ElMessage} from 'element-plus';
+import { mapGetters, mapState, mapActions } from 'vuex';
+import { ElMessage } from 'element-plus';
 
 export default {
   data() {
@@ -51,12 +51,12 @@ export default {
     ...mapGetters('visitor', ['getUsers', 'getUserDestinations']),
     userList() {
       return this.getUsers
-          .filter(user => user.username !== this.auth.username)
-          .map(user => ({
-            username: user.username,
-            hobby: user.hobby,
-            destinations: this.getUserDestinations(user.username)
-          }));
+        .filter(user => user.username !== this.auth.username)
+        .map(user => ({
+          username: user.username,
+          hobby: user.hobby,
+          destinations: this.getUserDestinations(user.username)
+        }));
     },
     userListToShow() {
       return this.userList.slice(0, this.userCount);
@@ -70,7 +70,7 @@ export default {
     },
     async inviteUser(username) {
       try {
-        const invite = {from: this.auth.username, to: username};
+        const invite = { from: this.auth.username, to: username };
         await this.$store.dispatch('visitor/sendInvite', invite);
         ElMessage.success('邀请发送成功');
       } catch (error) {
@@ -78,7 +78,9 @@ export default {
       }
     },
     updateUserList() {
-      console.log("用户数量更新为:", this.userCount);
+      this.$nextTick(() => {
+        console.log("用户数量更新为:", this.userCount);
+      });
     }
   },
   async created() {
@@ -91,9 +93,11 @@ export default {
 .team-formation {
   text-align: center;
   padding: 20px;
-  background: linear-gradient(to right, #f0f0f0, #ffffff); /* 渐变色背景 */
+  background: linear-gradient(to right, #f0f0f0, #ffffff);
+  /* 渐变色背景 */
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 阴影效果 */
 }
 
 .section-title {
@@ -117,7 +121,8 @@ export default {
 }
 
 .el-button {
-  border-radius: 20px; /* 圆角按钮 */
+  border-radius: 20px;
+  /* 圆角按钮 */
   font-weight: bold;
 }
 
@@ -126,7 +131,8 @@ export default {
 }
 
 .el-table__body-wrapper {
-  overflow-x: auto; /* 如果表格数据较多，允许水平滚动 */
+  overflow-x: auto;
+  /* 如果表格数据较多，允许水平滚动 */
 }
 
 @media screen and (max-width: 768px) {

@@ -25,7 +25,7 @@
         <el-input :type="confirmPasswordFieldType" v-model="confirmPassword" class="password-input">
           <template #suffix>
             <el-icon :component="confirmPasswordFieldType === 'password' ? Eye : EyeOff"
-                     @click="toggleConfirmPasswordVisibility" />
+              @click="toggleConfirmPasswordVisibility" />
           </template>
         </el-input>
 
@@ -58,7 +58,7 @@
         <el-table-column prop="departureDate" label="出发日期"></el-table-column>
         <el-table-column prop="checkboxValues" label="选择项">
           <template #default="{ row }">
-            <span v-for="(value, index) in row.checkboxValues" :key="index">{{ value }} </span>
+            <span>{{ row.checkboxValues.join(', ') }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="priceRange" label="可接受价格">
@@ -120,20 +120,22 @@
     </el-dialog>
 
     <!-- 团队成员 -->
-    <div class="team-members" v-if="currentProfile.team">
+    <div class="team-members"
+      v-if="currentProfile.team && currentProfile.team.members && currentProfile.team.members.length > 1">
       <h3>团队成员</h3>
-      <ul v-if="currentProfile.team.members && currentProfile.team.members.length">
+      <ul>
         <li v-for="member in currentProfile.team.members" :key="member.id">
-          <router-link :to="{ name: 'UserProfile', params: { username: member.username } }">{{ member.username }}</router-link>
+          <router-link :to="{ name: 'UserProfile', params: { username: member.username } }">{{ member.username
+            }}</router-link>
         </li>
       </ul>
       <el-button class="leave-team-btn" v-if="isCurrentUser" type="danger" @click="leaveTeam">退出团队</el-button>
-      <p v-else>暂无团队成员</p>
     </div>
     <div v-else>
       <h3>团队成员</h3>
       <p>暂无团队</p>
     </div>
+
 
     <!-- 显示和管理邀请 -->
     <div class="invitations" v-if="isCurrentUser && auth.invitations && auth.invitations.length">
