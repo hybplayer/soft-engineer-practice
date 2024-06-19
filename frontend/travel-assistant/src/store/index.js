@@ -77,9 +77,11 @@ const store = createStore({
         setCurrentProfile(state, profile) {
           state.currentProfile.username = profile.username;
           state.currentProfile.hobby = profile.hobby;
-          state.currentProfile.avatar = profile.avatar;
+          // state.currentProfile.avatar = profile.avatar;
+          state.currentProfile.avatar = profile.avatar ? profile.avatar.url : '';
           state.currentProfile.password = profile.password;
           console.log("state.currentProfile:", state.currentProfile);
+          console.log("state.currentAvatar:", state.currentProfile.avatar);
         },
         setPosts(state, posts) {
           state.posts = posts;

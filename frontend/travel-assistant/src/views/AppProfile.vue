@@ -2,6 +2,16 @@
   <div class="user-page">
     <h2>个人中心</h2>
 
+    <!-- 用户头像 -->
+    <div class="avatar-section" v-if="isCurrentUser">
+      <img :src="avatarUrl" alt="用户头像" class="avatar">
+      <input type="file" @change="onAvatarChange">
+      <button @click="updateAvatar">上传头像</button>
+    </div>
+    <div class="avatar-section" v-else>
+      <img :src="currentProfile.avatar || defaultAvatarUrl" alt="用户头像" class="avatar">
+    </div>
+
     <!-- 修改用户名 -->
     <form @submit.prevent="updateUsername" class="edit-form" v-if="isCurrentUser">
       <div class="edit">
@@ -160,6 +170,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { ElMessage } from 'element-plus';
+import defaultAvatarUrl from '@/assets/default-avatar.png';  // 默认头像
 
 export default {
   name: "UserPage",
@@ -191,14 +202,17 @@ export default {
       },
       editIndex: -1,
       postId: 1, // 示例帖子ID
-      invitations: [] // 初始化 invitations 数组
-
+      invitations: [], // 初始化 invitations 数组
+      defaultAvatarUrl // 默认头像URL
     };
   },
 
   computed: {
     ...mapState('visitor', ['auth', 'currentProfile', 'destinationData']),
     ...mapGetters('visitor', ['getUsers']),
+    avatarUrl() {
+      return this.currentProfile.avatar ? `${window.location.origin}${this.currentProfile.avatar}` : defaultAvatarUrl;
+    },
     priceRangeMap() {
       return {
         1: '1000元以下',
@@ -231,7 +245,28 @@ export default {
       await this.fetchUserProfile(this.username);
       await this.loadUserDestinationData(this.username);
       await this.fetchTeamByUsername(this.username);
-
+    },
+    onAvatarChange(event) {
+      this.avatarFile = event.target.files[0];
+    },
+    updateAvatar() {
+      if (this.avatarFile) {
+        const formData = new FormData();
+        formData.append('avatar', this.avatarFile);
+        console.log("formData:", formData);
+        this.updateUserInfo({ username: this.auth.username, avatar: formData })
+          .then(() => {
+            ElMessage.success('头像上传成功');
+            this.avatarFile = null;
+            this.fetchUserProfile(this.auth.username);
+          })
+          .catch(error => {
+            ElMessage.error('头像上传失败');
+            console.error('头像上传失败:', error);
+          });
+      } else {
+        ElMessage.error('请选择一个头像文件');
+      }
     },
     updateUsername() {
       if (this.newNickname) {
@@ -366,6 +401,21 @@ export default {
 @button-hover-color: lighten(@primary-color, 10%);
 @danger-color: #e74c3c;
 @border-color: #dcdcdc;
+
+/* 添加头像样式 */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
 
 .user-page {
   max-width: 1200px;

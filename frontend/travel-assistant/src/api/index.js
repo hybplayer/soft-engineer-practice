@@ -26,8 +26,21 @@ const api = {
     },
 
     // 更新用户信息
+    // updateUserInfo(payload) {
+    //     return axios.post(`${API_BASE_URL}/users/update`, payload);
+    // },
     updateUserInfo(payload) {
-        return axios.post(`${API_BASE_URL}/users/update`, payload);
+        const formData = payload.avatar;
+        formData.append('username', payload.username);
+        if (payload.newNickname) formData.append('newNickname', payload.newNickname);
+        if (payload.newPassword) formData.append('newPassword', payload.newPassword);
+        if (payload.hobby) formData.append('hobby', payload.hobby);
+
+        return axios.post(`${API_BASE_URL}/users/update`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     },
 
     // 获取所有目的地数据
