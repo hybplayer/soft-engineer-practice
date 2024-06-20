@@ -5,8 +5,10 @@
     <!-- 用户头像 -->
     <div class="avatar-section" v-if="isCurrentUser">
       <img :src="avatarUrl" alt="用户头像" class="avatar">
-      <input type="file" @change="onAvatarChange">
-      <button @click="updateAvatar">上传头像</button>
+      <div class="upload-section">
+        <input type="file" @change="onAvatarChange" class="file-input">
+        <button @click="updateAvatar" class="upload-button">上传头像</button>
+      </div>
     </div>
     <div class="avatar-section" v-else>
       <img :src="currentProfile.avatar || defaultAvatarUrl" alt="用户头像" class="avatar">
@@ -412,6 +414,7 @@ export default {
 @button-hover-color: lighten(@primary-color, 10%);
 @danger-color: #e74c3c;
 @border-color: #dcdcdc;
+@input-placeholder-color: #b0b0b0;
 
 /* 添加头像样式 */
 .avatar-section {
@@ -419,6 +422,46 @@ export default {
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+
+  .upload-section {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+
+    .file-input {
+      display: inline-block;
+      padding: 10px;
+      margin-right: 10px;
+      background: @card-background;
+      border: 1px solid @border-color;
+      border-radius: 5px;
+      color: @primary-color;
+      transition: border-color 0.3s;
+
+      &::placeholder {
+        color: @input-placeholder-color;
+      }
+
+      &:focus {
+        border-color: @primary-color;
+        outline: none;
+      }
+    }
+
+    .upload-button {
+      padding: 10px 20px;
+      background: @primary-color;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: @button-hover-color;
+      }
+    }
+  }
 }
 
 .avatar {
