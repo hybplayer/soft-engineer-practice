@@ -19,7 +19,7 @@
         <h3>路线顺序:</h3>
         <ol class="list-group">
           <li v-for="(location, index) in routeOrder" :key="index" class="list-group-item">
-            {{ index + 1 }}. {{ location }}
+            {{ location }}
           </li>
         </ol>
       </div>
@@ -176,7 +176,7 @@ export default {
       this.map.addOverlay(lastMarker);
     },
     updateRouteOrder(path) {
-      this.routeOrder = path.map((item, index) => `${index + 1}. ${item.location}`);
+      this.routeOrder = path.map((item) => `${item.location}`);
     }
   }
 };
