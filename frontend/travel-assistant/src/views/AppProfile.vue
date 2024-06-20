@@ -54,7 +54,7 @@
     </form>
 
     <!-- 显示用户信息 -->
-    <div v-else>
+    <div v-else class="edit-form">
       <p><strong>昵称:</strong> {{ currentProfile.username }}</p>
       <p><strong>旅游爱好:</strong> {{ currentProfile.hobby }}</p>
     </div>
@@ -65,7 +65,11 @@
       <el-table :data="destinationData" class="destination-table">
         <el-table-column prop="departure" label="出发地"></el-table-column>
         <el-table-column prop="destination" label="目的地"></el-table-column>
-        <el-table-column prop="departureDate" label="出发日期"></el-table-column>
+        <el-table-column prop="departureDate" label="出发日期">
+          <template #default="{ row }">
+            <span>{{ formatDate(row.departureDate) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="checkboxValues" label="选择项">
           <template #default="{ row }">
             <span>{{ row.checkboxValues.join(', ') }}</span>
@@ -240,6 +244,13 @@ export default {
       'fetchTeamByUsername', // 确保映射 fetchTeamByUsername 方法
       'leaveTeam',
     ]),
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}/${month}/${day}`;
+    },
     async loadUserProfile() {
       console.log("Loading user profile for:", this.username);
       await this.fetchUserProfile(this.username);
