@@ -253,6 +253,9 @@ export default {
       const day = date.getDate().toString().padStart(2, '0');
       return `${year}/${month}/${day}`;
     },
+    updateHobbyLength() {
+      this.hobbyLength = this.hobby.length;
+    },
     async loadUserProfile() {
       console.log("Loading user profile for:", this.username);
       await this.fetchUserProfile(this.username);
