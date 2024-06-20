@@ -196,6 +196,9 @@ const store = createStore({
             console.error('更新用户信息失败:', error);
           }
         },
+        async fetchAllUserDestinations({ state, dispatch }) {
+          await Promise.all(state.users.map(user => dispatch('fetchUserDestinations', user.username)));
+        },
         async loadDestinationData({ commit, state }) {
           try {
             const response = await api.getDestinationData();

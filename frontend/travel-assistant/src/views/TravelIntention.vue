@@ -29,12 +29,12 @@
               <el-checkbox label="女生"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
-          <el-form-item label="可接受价格">
+          <el-form-item label="预算">
             <el-select v-model="priceRange" placeholder="请选择">
-              <el-option label="1000元以下" value="1"></el-option>
-              <el-option label="1000-3000元" value="2"></el-option>
-              <el-option label="3000-5000元" value="3"></el-option>
-              <el-option label="5000元以上" value="4"></el-option>
+              <el-option label="1000-3000元" value="1"></el-option>
+              <el-option label="3000-5000元" value="2"></el-option>
+              <el-option label="5000-10000元" value="3"></el-option>
+              <el-option label="10000元以上" value="4"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="对同伴的要求">
