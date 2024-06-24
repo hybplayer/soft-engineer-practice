@@ -118,7 +118,7 @@ export default {
 
 <style scoped>
 .public-page {
-  width: calc(100vw - 200px);
+  width: calc(100vw - 55px);
   height: calc(100vh - 64px);
   display: flex;
   justify-content: center;
