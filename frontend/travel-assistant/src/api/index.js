@@ -30,11 +30,17 @@ const api = {
     //     return axios.post(`${API_BASE_URL}/users/update`, payload);
     // },
     updateUserInfo(payload) {
-        const formData = payload.avatar;
+        const formData = payload.username ? new FormData() : null;
+        // formData should't be null
+        if (formData === null) {
+            console.log('username is required');
+            return Promise.reject('username is required');
+        }
         formData.append('username', payload.username);
         if (payload.newNickname) formData.append('newNickname', payload.newNickname);
         if (payload.newPassword) formData.append('newPassword', payload.newPassword);
         if (payload.hobby) formData.append('hobby', payload.hobby);
+        if (payload.avatar) formData.append('avatar', payload.avatar);
 
         return axios.post(`${API_BASE_URL}/users/update`, formData, {
             headers: {

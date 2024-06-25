@@ -4,7 +4,7 @@
       <h2>论坛 | 分享 结伴 找攻略</h2>
       <el-button @click="showModal = true" type="primary">发新帖</el-button>
     </div>
-    <NewPostModal v-if="showModal" @closeModal="handleCloseModal" @submitPost="submitPost" />
+    <NewPostModal v-if="showModal" @closeModal="handleCloseModal" @submitPost="handleSubmitPost" />
     <div class="forum-posts">
       <PostPage v-for="post in filteredPosts" :key="post.id" :post="post" />
     </div>
@@ -41,6 +41,9 @@ export default {
     ...mapActions('visitor', ['loadPosts']),
     handleCloseModal() {
       this.showModal = false;
+    },
+    handleSubmitPost() {
+
     }
   },
   created() {

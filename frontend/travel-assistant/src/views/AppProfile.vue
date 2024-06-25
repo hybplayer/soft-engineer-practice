@@ -178,6 +178,8 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { ElMessage } from 'element-plus';
 import defaultAvatarUrl from '@/assets/default-avatar.png';  // 默认头像
 
+const API_BASE_URL = 'http://localhost:20334/api';
+
 export default {
   name: "UserPage",
   props: {
@@ -217,7 +219,7 @@ export default {
     ...mapState('visitor', ['auth', 'currentProfile', 'destinationData']),
     ...mapGetters('visitor', ['getUsers']),
     avatarUrl() {
-      return this.currentProfile.avatar ? `${window.location.origin}${this.currentProfile.avatar}` : defaultAvatarUrl;
+      return this.currentProfile.avatar ? `${API_BASE_URL}/users/getAvatar/${this.currentProfile.avatar}` : defaultAvatarUrl;
     },
     priceRangeMap() {
       return {
@@ -267,13 +269,11 @@ export default {
     },
     updateAvatar() {
       if (this.avatarFile) {
-        const formData = new FormData();
-        formData.append('avatar', this.avatarFile);
-        console.log("formData:", formData);
-        this.updateUserInfo({ username: this.auth.username, avatar: formData })
+        console.log('Uploading avatar:', this.avatarFile);
+        this.updateUserInfo({ username: this.auth.username, avatar: this.avatarFile })
           .then(() => {
             ElMessage.success('头像上传成功');
-            this.avatarFile = null;
+            // this.avatarFile = null;
             this.fetchUserProfile(this.auth.username);
           })
           .catch(error => {

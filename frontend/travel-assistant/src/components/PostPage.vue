@@ -1,7 +1,7 @@
 <template>
   <div class="post">
     <div class="user-info">
-      <img :src="post.avatar || defaultAvatar" alt="User Avatar" />
+      <img :src="avatarUrl" alt="User Avatar" />
       <span @click="viewProfile(post.username)" class="username-link">{{ post.username }}</span>
     </div>
 
@@ -23,7 +23,7 @@
 <script>
 import CommentSection from "@/components/CommentSection.vue";
 import defaultAvatar from "../assets/user-default-1.png"; // 请确保有一个默认头像
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: "PostPage",
@@ -36,18 +36,29 @@ export default {
   components: {
     CommentSection,
   },
-  methods: {
-    viewProfile(username) {
-      this.$router.push({ name: 'UserProfile', params: { username } });
-    }
-  },
   data() {
     return {
-      defaultAvatar
+      userAvatarUrl: defaultAvatar
+    }
+  },
+  async created() {
+    this.userAvatarUrl = await this.getUserAvatar();
+  },
+  methods: {
+    ...mapActions('visitor', ['fetchUserProfile']),
+    viewProfile(username) {
+      this.$router.push({ name: 'UserProfile', params: { username } });
+    },
+    async getUserAvatar() {
+      const userProfile = await this.fetchUserProfile(this.post.username);
+      return userProfile.avatar ? `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}` : defaultAvatar;
     }
   },
   computed: {
-    ...mapState('visitor', ['auth'])
+    ...mapState('visitor', ['auth']),
+    avatarUrl() {
+      return this.userAvatarUrl;
+    }
   }
 };
 </script>

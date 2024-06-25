@@ -58,8 +58,28 @@ export default {
           destinations: this.getUserDestinations(user.username)
         }));
     },
+    sortedUserList() {
+      // 创建 userList 的深拷贝
+      const userListCopy = JSON.parse(JSON.stringify(this.userList));
+      const authHobby = this.auth.hobby.toLowerCase();
+      const authDestinations = this.getUserDestinations(this.auth.username).length ? this.getUserDestinations(this.auth.username).sort().join(',').toLowerCase() : '';
+      return userListCopy.sort((a, b) => {
+        const aHobby = a.hobby.toLowerCase();
+        const bHobby = b.hobby.toLowerCase();
+        const aHobbyDistance = this.levenshteinDistance(aHobby, authHobby);
+        const bHobbyDistance = this.levenshteinDistance(bHobby, authHobby);
+        
+        const aDestinations = a.destinations.length ? a.destinations.sort().join(',').toLowerCase() : '';
+        const bDestinations = b.destinations.length ? b.destinations.sort().join(',').toLowerCase() : '';
+        const aDestinationsDistance = this.levenshteinDistance(aDestinations, authDestinations);
+        const bDestinationsDistance = this.levenshteinDistance(bDestinations, authDestinations);
+
+        return 0.8 * aHobbyDistance + 0.2 * aDestinationsDistance - (0.8 * bHobbyDistance + 0.2 * bDestinationsDistance);
+      });
+    },
     userListToShow() {
-      return this.userList.slice(0, this.userCount);
+      return this.sortedUserList
+      .slice(0, this.userCount);
     }
   },
   methods: {
@@ -81,7 +101,28 @@ export default {
       this.$nextTick(() => {
         console.log("用户数量更新为:", this.userCount);
       });
-    }
+    },
+    levenshteinDistance(s, t) {
+      if (!s.length) return t.length;
+      if (!t.length) return s.length;
+      const arr = [];
+      for (let i = 0; i <= t.length; i++) {
+        arr[i] = [i];
+      }
+      for (let j = 0; j <= s.length; j++) {
+        arr[0][j] = j;
+      }
+      for (let i = 1; i <= t.length; i++) {
+        for (let j = 1; j <= s.length; j++) {
+          arr[i][j] = Math.min(
+            arr[i - 1][j] + 1,
+            arr[i][j - 1] + 1,
+            arr[i - 1][j - 1] + (s[j - 1] === t[i - 1] ? 0 : 1)
+          );
+        }
+      }
+      return arr[t.length][s.length];
+    },
   },
   async created() {
     await this.loadUserData();
