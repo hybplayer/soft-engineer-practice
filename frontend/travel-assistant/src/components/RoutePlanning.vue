@@ -15,14 +15,16 @@
         <button type="button" @click="addLocation" class="btn btn-primary mb-2">添加途经点</button>
         <button type="submit" class="btn btn-success">搜索路线</button>
       </form>
-      <div class="route-info">
-        <h3>路线顺序:</h3>
-        <ol class="list-group">
-          <li v-for="(location, index) in routeOrder" :key="index" class="list-group-item">
-            {{ location }}
-          </li>
-        </ol>
-      </div>
+    </div>
+    <!-- 弹出窗口部分 -->
+    <div v-if="showRouteOrder" class="sidebar2">
+      <h2>路线顺序</h2>
+      <ol class="list-group">
+        <li v-for="(location, index) in routeOrder" :key="index" class="list-group-item">
+          {{ location }}
+        </li>
+      </ol>
+      <button @click="closeRouteOrderPopup" class="btn btn-secondary mt-3">关闭</button>
     </div>
     <div id="map" class="map-container"></div>
   </div>
@@ -32,11 +34,12 @@
 export default {
   data() {
     return {
-      locations: ['哈尔滨市', '北京市', '乌鲁木齐市', '东莞市', '南京市', '杭州市'], // 默认途经点
+      locations: ['哈尔滨市', '北京市', '乌鲁木齐市', '东莞市', '杭州市'], // 默认途经点
       map: null,
       geocoder: null,
       driving: null,
-      routeOrder: []
+      routeOrder: [],
+      showRouteOrder: false
     };
   },
   mounted() {
@@ -106,6 +109,7 @@ export default {
           const bestPath = this.calculateBestPath(points);
           this.plotRoute(bestPath);
           this.updateRouteOrder(bestPath);
+          this.showRouteOrder = true;
         }
       } catch (error) {
         console.error('搜索路线时发生错误:', error);
@@ -177,6 +181,9 @@ export default {
     },
     updateRouteOrder(path) {
       this.routeOrder = path.map((item) => `${item.location}`);
+    },
+    closeRouteOrderPopup() {
+      this.showRouteOrder = false;  // 关闭路线顺序弹出窗口
     }
   }
 };
@@ -189,13 +196,90 @@ export default {
 }
 
 .sidebar {
-  width: 300px;
+  width: 250px;
   height: 95%;
   background-color: #f8f9fa;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 10;
   overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar2 {
+  width: 250px;
+  height: 95%;
+  left: 300px;
+  background-color: #f8f9fa;
+  z-index: 10;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-control {
+  border: 2px solid #3498db; /* 设置输入框边框样式 */
+  border-radius: 4px; /* 圆角 */
+  padding: 8px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #2ecc71; /* 输入框获得焦点时的边框颜色 */
+}
+
+.btn-primary, .btn-danger, .btn-success, .btn-secondary {
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 16px;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  border-color: #3498db;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+  border-color: #c0392b;
+}
+
+.btn-success {
+  background-color: #2ecc71;
+  border-color: #2ecc71;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background-color: #27ae60;
+  border-color: #27ae60;
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  border-color: #95a5a6;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #7f8c8d;
+  border-color: #7f8c8d;
 }
 
 .map-container {
@@ -209,6 +293,7 @@ export default {
 
 .input-group {
   display: flex;
+  align-items: center;
 }
 
 .input-group-append {
@@ -230,5 +315,9 @@ export default {
 
 .route-info ol {
   padding-left: 20px;
+}
+
+.list-group-item {
+  padding: 8px;
 }
 </style>

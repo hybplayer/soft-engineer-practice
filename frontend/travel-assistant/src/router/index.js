@@ -20,7 +20,7 @@ const routes = [
   { path: '/team-formation', component: TeamFormation, name: 'TeamFormation', meta: { showFooter: false } },
   { path: '/route-planning', component: RoutePlanning, name: 'RoutePlanning', meta: { showFooter: false } },
   {
-    path: '/forumpage', component: ForumPage, name: 'ForumPage', meta: { showFooter: true },
+    path: '/forumpage', component: ForumPage, name: 'ForumPage', meta: { showFooter: false },
     beforeEnter: (to, from, next) => {
       store.dispatch('visitor/loadPosts').then(() => {
         next(); // 继续路由导航
