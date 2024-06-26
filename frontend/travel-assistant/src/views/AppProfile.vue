@@ -219,6 +219,9 @@ export default {
     ...mapState('visitor', ['auth', 'currentProfile', 'destinationData']),
     ...mapGetters('visitor', ['getUsers']),
     avatarUrl() {
+      if (this.currentProfile.avatar) {
+        console.log("appprofile-this.currentProfile.avatar: ", this.currentProfile.avatar);
+      }
       return this.currentProfile.avatar ? `${API_BASE_URL}/users/getAvatar/${this.currentProfile.avatar}` : defaultAvatarUrl;
     },
     priceRangeMap() {

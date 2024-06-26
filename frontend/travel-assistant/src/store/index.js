@@ -77,9 +77,12 @@ const store = createStore({
         setCurrentProfile(state, profile) {
           state.currentProfile.username = profile.username;
           state.currentProfile.hobby = profile.hobby;
-          // state.currentProfile.avatar = profile.avatar;
           state.currentProfile.avatar = profile.avatar ? profile.avatar.url : '';
           state.currentProfile.password = profile.password;
+          state.auth.username = profile.username;
+          state.auth.hobby = profile.hobby;
+          state.auth.avatar = profile.avatar ? profile.avatar.url : '';
+          state.auth.password = profile.password;
           console.log("state.currentProfile:", state.currentProfile);
           console.log("state.currentAvatar:", state.currentProfile.avatar);
         },
@@ -275,10 +278,12 @@ const store = createStore({
         },
         async loadComments({ commit }, postId) {
           const response = await api.getComments(postId);
+          console.log("load comment response: ", response);
           commit('setComments', { postId, comments: response.data });
         },
         async addComment({ commit }, comment) {
           try {
+            console.log("comment.avator: ", comment.avatar);
             const response = await api.addComment(comment);
             commit('addComment', response.data);
           } catch (error) {

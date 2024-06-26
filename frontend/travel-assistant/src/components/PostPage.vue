@@ -1,7 +1,7 @@
 <template>
   <div class="post">
     <div class="user-info">
-      <img :src="avatarUrl" alt="User Avatar" />
+      <img :src="userAvatarUrl" alt="User Avatar" />
       <span @click="viewProfile(post.username)" class="username-link">{{ post.username }}</span>
     </div>
 
@@ -42,23 +42,40 @@ export default {
     }
   },
   async created() {
-    this.userAvatarUrl = await this.getUserAvatar();
+    if (this.post.username) {
+      this.userAvatarUrl = await this.getUserAvatar(this.post.username);
+    }
+  },
+  watch: {
+    post: {
+      immediate: true,
+      handler(newPost) {
+        if (newPost.username) {
+          this.updateUserAvatar(newPost.username);
+        }
+      }
+    }
   },
   methods: {
     ...mapActions('visitor', ['fetchUserProfile']),
     viewProfile(username) {
       this.$router.push({ name: 'UserProfile', params: { username } });
     },
-    async getUserAvatar() {
-      const userProfile = await this.fetchUserProfile(this.post.username);
-      return userProfile.avatar ? `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}` : defaultAvatar;
+    async getUserAvatar(username) {
+      const userProfile = await this.fetchUserProfile(username);
+      if (userProfile && userProfile.avatar) {
+        console.log("userProfile.avatar: ", userProfile.avatar);
+        return `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}`;
+      } else {
+        return defaultAvatar;
+      }
+    },
+    async updateUserAvatar(username) {
+      this.userAvatarUrl = await this.getUserAvatar(username);
     }
   },
   computed: {
     ...mapState('visitor', ['auth']),
-    avatarUrl() {
-      return this.userAvatarUrl;
-    }
   }
 };
 </script>

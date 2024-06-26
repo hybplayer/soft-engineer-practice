@@ -39,7 +39,7 @@ export default {
     ...mapState('visitor', ['auth'])
   },
   methods: {
-    ...mapActions('visitor', ['addPost']),
+    ...mapActions('visitor', ['addPost', 'loadPosts']),
     handleImageUpload(event) {
       const files = event.target.files;
       for (let i = 0; i < files.length; i++) {
@@ -59,6 +59,7 @@ export default {
         formData.append('title', this.title);
         formData.append('content', this.content);
         formData.append('username', this.auth.username); // 使用当前登录用户的用户名
+        console.log("submitPost: ", this.auth.username);
         this.uploadedImages.forEach(image => {
           formData.append('images', image.file);
         });
@@ -68,6 +69,7 @@ export default {
           this.$emit('submitPost', response.data);
           this.resetForm();
           this.$emit('closeModal');
+          // this.loadPosts();
         }).catch(error => {
           console.error('帖子上传失败:', error);
         });
@@ -85,9 +87,6 @@ export default {
   }
 };
 </script>
-
-
-
 
 <style scoped>
 .new-post-modal {

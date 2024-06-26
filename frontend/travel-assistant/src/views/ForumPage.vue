@@ -43,7 +43,8 @@ export default {
       this.showModal = false;
     },
     handleSubmitPost() {
-
+      this.showModal = false;
+      this.loadPosts();
     }
   },
   created() {
