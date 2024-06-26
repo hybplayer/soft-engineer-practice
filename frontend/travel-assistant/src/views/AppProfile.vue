@@ -3,16 +3,23 @@
     <h2>个人中心</h2>
 
     <!-- 用户头像 -->
-    <div class="avatar-section" v-if="isCurrentUser">
+    <div class="avatar-section" @mouseover="isHovering = true" @mouseleave="isHovering = false">
       <img :src="avatarUrl" alt="用户头像" class="avatar">
-      <div class="upload-section">
-        <input type="file" @change="onAvatarChange" class="file-input">
-        <button @click="updateAvatar" class="upload-button">上传头像</button>
+      <div class="edit-overlay" v-if="isCurrentUser && isHovering " @click="openAvatarDialog">
+        修改头像
       </div>
     </div>
-    <div class="avatar-section" v-else>
-      <img :src="currentProfile.avatar || defaultAvatarUrl" alt="用户头像" class="avatar">
-    </div>
+
+    <!-- 弹出窗口用于修改头像 -->
+    <el-dialog v-model="avatarDialogVisible" title="修改头像">
+      <div class="upload-section">
+        <input type="file" @change="onAvatarChange" class="file-input">
+        <div v-if="avatarFile">
+          <img :src="avatarPreview" alt="头像预览" class="avatar-preview">
+        </div>
+        <el-button @click="updateAvatar" type="primary">上传头像</el-button>
+      </div>
+    </el-dialog>
 
     <!-- 修改用户名 -->
     <form @submit.prevent="updateUsername" class="edit-form" v-if="isCurrentUser">
@@ -37,7 +44,7 @@
         <el-input :type="confirmPasswordFieldType" v-model="confirmPassword" class="password-input">
           <template #suffix>
             <el-icon :component="confirmPasswordFieldType === 'password' ? Eye : EyeOff"
-              @click="toggleConfirmPasswordVisibility" />
+                     @click="toggleConfirmPasswordVisibility" />
           </template>
         </el-input>
 
@@ -136,22 +143,20 @@
     </el-dialog>
 
     <!-- 团队成员 -->
-    <div class="team-members"
-      v-if="currentProfile.team && currentProfile.team.members && currentProfile.team.members.length > 1">
+    <div class="team-members">
       <h3>团队成员</h3>
-      <ul>
-        <li v-for="member in currentProfile.team.members" :key="member.id">
-          <router-link :to="{ name: 'UserProfile', params: { username: member.username } }">{{ member.username
-            }}</router-link>
-        </li>
-      </ul>
-      <el-button class="leave-team-btn" v-if="isCurrentUser" type="danger" @click="leaveTeam">退出团队</el-button>
+      <template v-if="teamMembersExist">
+        <ul>
+          <li v-for="member in currentProfile.team.members" :key="member.id">
+            <router-link :to="{ name: 'UserProfile', params: { username: member.username } }">{{ member.username }}</router-link>
+          </li>
+        </ul>
+        <el-button class="leave-team-btn" v-if="isCurrentUser" type="danger" @click="leaveTeam">退出团队</el-button>
+      </template>
+      <template v-else>
+        <p>暂无团队成员</p>
+      </template>
     </div>
-    <div v-else>
-      <h3>团队成员</h3>
-      <p>暂无团队</p>
-    </div>
-
 
     <!-- 显示和管理邀请 -->
     <div class="invitations" v-if="isCurrentUser && auth.invitations && auth.invitations.length">
@@ -174,9 +179,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
-import { ElMessage } from 'element-plus';
-import defaultAvatarUrl from '@/assets/default-avatar.png';  // 默认头像
+import {mapActions, mapGetters, mapState} from 'vuex';
+import {ElMessage} from 'element-plus';
+import defaultAvatarUrl from '@/assets/default-avatar.png'; // 默认头像
 
 const API_BASE_URL = 'http://localhost:20334/api';
 
@@ -195,6 +200,12 @@ export default {
       confirmPassword: '',
       hobby: '',
       hobbyLength: 0,
+
+      avatarFile: null,
+      avatarPreview: '',
+      avatarDialogVisible: false,
+      isHovering: false,
+
       passwordFieldType: 'password',
       confirmPasswordFieldType: 'password',
       editDialogVisible: false,
@@ -234,6 +245,13 @@ export default {
     },
     isCurrentUser() {
       return this.username === this.auth.username;
+    },
+    teamMembersExist() {
+      if (this.currentProfile.team && this.currentProfile.team.members && this.currentProfile.team.members.length > 1) {
+        // 检查当前用户是否在团队成员列表中
+        return this.currentProfile.team.members.some(member => member.username === this.currentProfile.username);
+      }
+      return false;
     }
   },
   watch: {
@@ -267,22 +285,29 @@ export default {
       await this.loadUserDestinationData(this.username);
       await this.fetchTeamByUsername(this.username);
     },
+    openAvatarDialog() {
+      this.avatarDialogVisible = true;
+    },
     onAvatarChange(event) {
-      this.avatarFile = event.target.files[0];
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        this.avatarFile = file;
+        this.avatarPreview = URL.createObjectURL(file);
+      }
     },
     updateAvatar() {
       if (this.avatarFile) {
         console.log('Uploading avatar:', this.avatarFile);
         this.updateUserInfo({ username: this.auth.username, avatar: this.avatarFile })
-          .then(() => {
-            ElMessage.success('头像上传成功');
-            // this.avatarFile = null;
-            this.fetchUserProfile(this.auth.username);
-          })
-          .catch(error => {
-            ElMessage.error('头像上传失败');
-            console.error('头像上传失败:', error);
-          });
+            .then(() => {
+              ElMessage.success('头像上传成功');
+              // this.avatarFile = null;
+              this.fetchUserProfile(this.auth.username);
+            })
+            .catch(error => {
+              ElMessage.error('头像上传失败');
+              console.error('头像上传失败:', error);
+            });
       } else {
         ElMessage.error('请选择一个头像文件');
       }
@@ -295,17 +320,17 @@ export default {
           return;
         }
         this.updateUserInfo({ username: this.auth.username, newNickname: this.newNickname, newPassword: this.auth.password, hobby: this.hobby })
-          .then(() => {
-            ElMessage.success('昵称保存成功');
-            this.auth.username = this.newNickname;
-            this.fetchUserProfile(this.auth.username).then(() => {
-              this.$router.push(`/user/${this.newNickname}`); // 修改成功后刷新用户信息并更新URL
+            .then(() => {
+              ElMessage.success('昵称保存成功');
+              this.auth.username = this.newNickname;
+              this.fetchUserProfile(this.auth.username).then(() => {
+                this.$router.push(`/user/${this.newNickname}`); // 修改成功后刷新用户信息并更新URL
+              });
+            })
+            .catch(error => {
+              ElMessage.error('保存失败');
+              console.error('昵称保存失败:', error);
             });
-          })
-          .catch(error => {
-            ElMessage.error('保存失败');
-            console.error('昵称保存失败:', error);
-          });
       }
     },
     updatePassword() {
@@ -314,37 +339,37 @@ export default {
         return;
       }
       this.updateUserInfo({ username: this.auth.username, newNickname: this.auth.username, newPassword: this.newPassword, hobby: this.hobby })
-        .then(() => {
-          ElMessage.success('密码保存成功');
-          this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
-        })
-        .catch(error => {
-          ElMessage.error('保存失败');
-          console.error('密码保存失败:', error);
-        });
-    },
-    updateHobby() {
-      if (this.hobby) {
-        this.updateUserInfo({ username: this.auth.username, newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby })
           .then(() => {
-            ElMessage.success('爱好保存成功');
+            ElMessage.success('密码保存成功');
             this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
           })
           .catch(error => {
             ElMessage.error('保存失败');
-            console.error('爱好保存失败:', error);
+            console.error('密码保存失败:', error);
           });
+    },
+    updateHobby() {
+      if (this.hobby) {
+        this.updateUserInfo({ username: this.auth.username, newNickname: this.auth.username, newPassword: this.auth.password, hobby: this.hobby })
+            .then(() => {
+              ElMessage.success('爱好保存成功');
+              this.fetchUserProfile(this.username); // 修改成功后刷新用户信息
+            })
+            .catch(error => {
+              ElMessage.error('保存失败');
+              console.error('爱好保存失败:', error);
+            });
       }
     },
     deleteDestination(id) {
       this.deleteDestinationData(id)
-        .then(() => {
-          ElMessage.success('删除成功');
-        })
-        .catch(error => {
-          ElMessage.error('删除失败');
-          console.error('删除目的地失败:', error);
-        });
+          .then(() => {
+            ElMessage.success('删除成功');
+          })
+          .catch(error => {
+            ElMessage.error('删除失败');
+            console.error('删除目的地失败:', error);
+          });
     },
     editDestination(row, index) {
       console.log('Editing destination:', row);
@@ -355,14 +380,14 @@ export default {
     saveEdit() {
       const { id, ...data } = this.editForm;
       this.editDestinationData({ id, data })
-        .then(() => {
-          ElMessage.success('编辑成功');
-          this.editDialogVisible = false;
-        })
-        .catch(error => {
-          ElMessage.error('编辑失败');
-          console.error('编辑目的地失败:', error);
-        });
+          .then(() => {
+            ElMessage.success('编辑成功');
+            this.editDialogVisible = false;
+          })
+          .catch(error => {
+            ElMessage.error('编辑失败');
+            console.error('编辑目的地失败:', error);
+          });
     },
     async acceptInvite(invite) {
       try {
@@ -425,56 +450,67 @@ export default {
 /* 添加头像样式 */
 .avatar-section {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
-
-  .upload-section {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 20px; /* 调整为居中显示 */
+  .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .edit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
-    margin-top: 10px;
-
-    .file-input {
-      display: inline-block;
-      padding: 10px;
-      margin-right: 10px;
-      background: @card-background;
-      border: 1px solid @border-color;
-      border-radius: 5px;
-      color: @primary-color;
-      transition: border-color 0.3s;
-
-      &::placeholder {
-        color: @input-placeholder-color;
-      }
-
-      &:focus {
-        border-color: @primary-color;
-        outline: none;
-      }
-    }
-
-    .upload-button {
-      padding: 10px 20px;
-      background: @primary-color;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-
-      &:hover {
-        background-color: @button-hover-color;
-      }
-    }
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 16px;
+    border-radius: 50%;
+    cursor: pointer;
   }
 }
 
-.avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 10px;
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+
+  .file-input {
+    margin-bottom: 10px;
+  }
+
+  .avatar-preview {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .el-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: @primary-color;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: @button-hover-color;
+    }
+  }
 }
 
 .user-page {

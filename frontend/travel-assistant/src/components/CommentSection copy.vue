@@ -17,7 +17,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import defaultAvatar from "../assets/user-default-2.png"; // 请确保有一个默认头像
+import defaultAvatar from "../assets/user-default.png"; // 请确保有一个默认头像
 
 export default {
   name: "CommentSection",

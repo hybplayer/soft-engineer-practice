@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       newComment: "",
-      defaultAvatar: require("../assets/user-default-2.png") // 默认头像的路径
+      defaultAvatar: require("../assets/user-default.png") // 默认头像的路径
     };
   },
   computed: {
