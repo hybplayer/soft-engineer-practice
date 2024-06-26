@@ -57,10 +57,14 @@ export default {
       }
       // const avatarUrl = this.currentUser.avatar || this.defaultAvatar;
       const userProfile = await this.fetchUserProfile(this.currentUser.username);
+      let avatarUrl = "";
       if (userProfile && userProfile.avatar) {
         console.log("userProfile.avatar: ", userProfile.avatar);
+        avatarUrl = `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}`;
+      } else {
+        avatarUrl = this.defaultAvatar;
       }
-      const avatarUrl = this.currentUser.avatar ? `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}` : this.defaultAvatar;
+      // const avatarUrl = this.currentUser.avatar ? `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}` : this.defaultAvatar;
       console.log("avatarUrl: ", avatarUrl);
       const newComment = {
         postId: this.postId,
