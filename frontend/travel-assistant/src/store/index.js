@@ -79,12 +79,16 @@ const store = createStore({
           state.currentProfile.hobby = profile.hobby;
           state.currentProfile.avatar = profile.avatar ? profile.avatar.url : '';
           state.currentProfile.password = profile.password;
+          console.log("state.currentProfile:", state.currentProfile);
+          console.log("state.currentAvatar:", state.currentProfile.avatar);
+        },
+        setAuthProfile(state, profile) {
           state.auth.username = profile.username;
           state.auth.hobby = profile.hobby;
           state.auth.avatar = profile.avatar ? profile.avatar.url : '';
           state.auth.password = profile.password;
-          console.log("state.currentProfile:", state.currentProfile);
-          console.log("state.currentAvatar:", state.currentProfile.avatar);
+          console.log("state.AuthProfile:", state.currentProfile);
+          console.log("state.AuthProfile:", state.currentProfile.avatar);
         },
         setPosts(state, posts) {
           state.posts = posts;
@@ -139,10 +143,8 @@ const store = createStore({
           try {
             const response = await axios.post('/api/login', credentials);
             commit('login', response.data);
-
             // 加载用户邀请信息
             await dispatch('fetchInvitations');
-
             return response.data;
           } catch (error) {
             throw new Error('登录失败');
@@ -171,7 +173,7 @@ const store = createStore({
           try {
             console.log("state.auth.username:", state.auth.username);
             const response = await api.getUser(state.auth.username); // 根据当前用户名动态获取用户数据
-            commit('setCurrentProfile', response.data);
+            commit('setAuthProfile', response.data);
           } catch (error) {
             console.error('获取当前用户数据失败:', error);
           }

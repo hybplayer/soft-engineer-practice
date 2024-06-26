@@ -49,15 +49,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions('visitor', ['loadComments', 'addComment']),
+    ...mapActions('visitor', ['loadComments', 'addComment', 'fetchUserProfile']),
     async submitComment() {
       if (!this.currentUser) {
         console.error("No current user data available.");
         return;  // 如果没有 currentUser，直接返回避免执行后续代码
       }
       // const avatarUrl = this.currentUser.avatar || this.defaultAvatar;
-      console.log("aaa this.currentUser.avatar: ", this.currentUser.avatar);
-      const avatarUrl = this.currentUser.avatar ? `http://localhost:20334/api/users/getAvatar/${this.currentUser.avatar}` : this.defaultAvatar;
+      const userProfile = await this.fetchUserProfile(this.currentUser.username);
+      if (userProfile && userProfile.avatar) {
+        console.log("userProfile.avatar: ", userProfile.avatar);
+      }
+      const avatarUrl = this.currentUser.avatar ? `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}` : this.defaultAvatar;
       console.log("avatarUrl: ", avatarUrl);
       const newComment = {
         postId: this.postId,
