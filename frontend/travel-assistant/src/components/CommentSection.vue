@@ -60,7 +60,7 @@ export default {
       let avatarUrl = "";
       if (userProfile && userProfile.avatar) {
         console.log("userProfile.avatar: ", userProfile.avatar);
-        avatarUrl = `http://localhost:20334/api/users/getAvatar/${userProfile.avatar.url}`;
+        avatarUrl = `http://eth.jht213.com:20334/api/users/getAvatar/${userProfile.avatar.url}`;
       } else {
         avatarUrl = this.defaultAvatar;
       }

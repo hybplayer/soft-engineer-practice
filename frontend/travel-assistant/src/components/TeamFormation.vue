@@ -74,7 +74,7 @@ export default {
         const aDestinationsDistance = this.levenshteinDistance(aDestinations, authDestinations);
         const bDestinationsDistance = this.levenshteinDistance(bDestinations, authDestinations);
 
-        return 0.2 * aHobbyDistance + 0.8 * aDestinationsDistance - (0.2 * bHobbyDistance + 0.8 * bDestinationsDistance);
+        return 0.05 * aHobbyDistance + 0.95 * aDestinationsDistance - (0.05 * bHobbyDistance + 0.95 * bDestinationsDistance);
       });
     },
     userListToShow() {

@@ -34,7 +34,7 @@
 export default {
   data() {
     return {
-      locations: ['哈尔滨市', '北京市', '乌鲁木齐市', '东莞市', '杭州市'], // 默认途经点
+      locations: ['天安门广场', '清华大学', '国家体育场', '北京天文馆'], // 默认途经点
       map: null,
       geocoder: null,
       driving: null,

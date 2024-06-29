@@ -65,13 +65,13 @@ export default {
         require('@/assets/hongkong.jpg'),
         require('@/assets/paris.jpg')
       ],
-      departure: '',
-      destination: '',
+      departure: '哈尔滨',
+      destination: '北京',
       departureDate: '',
       checkboxValues: [],
       priceRange: '',
-      companionRequirements: '',
-      remark: ''
+      companionRequirements: '无特殊要求',
+      remark: '请及时联系'
     };
   },
   computed: {

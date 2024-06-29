@@ -183,7 +183,7 @@ import {mapActions, mapGetters, mapState} from 'vuex';
 import {ElMessage} from 'element-plus';
 import defaultAvatarUrl from '@/assets/default-avatar.png'; // 默认头像
 
-const API_BASE_URL = 'http://localhost:20334/api';
+const API_BASE_URL = 'http://eth.jht213.com:20334/api';
 
 export default {
   name: "UserPage",

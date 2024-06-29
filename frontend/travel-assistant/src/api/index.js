@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:20334/api';
+const API_BASE_URL = 'http://eth.jht213.com:20334/api';
 
 const api = {
     // 用户登录

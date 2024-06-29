@@ -16,6 +16,7 @@ module.exports = defineConfig({
       'localhost',
       'www.qyer.com',
       'eth.jht213.com',
+      'lv.eth.jht213.com',
     ]
   }
 })
